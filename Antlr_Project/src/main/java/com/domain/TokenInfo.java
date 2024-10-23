@@ -1,7 +1,5 @@
 package com.domain;
 
-import com.util.Log;
-
 public class TokenInfo {
 	private String tokenName;		// Column 이름	- V_BASE_YMD
 	private String aliasName;		// Alias 이름		- 기준일자
@@ -16,7 +14,6 @@ public class TokenInfo {
 		this.tableName = tableName;
 		this.symbolicId = symbolicId;
 		this.symbolNo = symbolNo;
-		//Log.debug(this.toString());
 	}
 
 	public String getTokenName() {

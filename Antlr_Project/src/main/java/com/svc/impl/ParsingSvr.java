@@ -5,12 +5,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.domain.JavaSourceTokenInfo;
 import com.domain.TokenInfo;
 import com.dto.TokenInfoCreateDto;
 import com.svc.IParsingSvr;
 import com.svc.ITokenInfoSvc;
 import com.util.Log;
 
+import util.antlr.Java8Parser;
 import util.antlr.PlSqlParser;
 
 public class ParsingSvr implements IParsingSvr {
@@ -18,6 +20,17 @@ public class ParsingSvr implements IParsingSvr {
 	ITokenInfoSvc tokenInfoSvr = new TokenInfoSvc(); 
 	
 	int tokenIdx;
+	
+
+	public List<TokenInfo> parsingJava(List<JavaSourceTokenInfo> tokenList, Java8Parser parser, List<Integer> reservedWordList) {
+		
+		Log.debug("ParsingSvr.parsingJava Start~!!");
+		
+		List<TokenInfo> parsingResultList = new ArrayList<>();
+		
+		return parsingResultList;
+	}
+		
 	
 	/**
 	 * 설명 : SELECT SQL문 처리 
@@ -73,9 +86,6 @@ public class ParsingSvr implements IParsingSvr {
 				}
 			}
 		}
-		
-		Log.logListToString(parser, parsingResultList);
-		
 		return parsingResultList;
 	}
 	
