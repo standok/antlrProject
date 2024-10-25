@@ -51,9 +51,9 @@ public class ConvertSourceMain {
 		}
 		
 		// SQL 파일 Parsing
-		for(File file : sqlFileList) {
-			convertSQLSource(file);
-		}
+//		for(File file : sqlFileList) {
+//			convertSQLSource(file);
+//		}
 	}
 	
 	public static void convertJavaSource(File file) {

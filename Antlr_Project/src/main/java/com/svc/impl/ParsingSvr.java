@@ -22,13 +22,36 @@ public class ParsingSvr implements IParsingSvr {
 	int tokenIdx;
 	
 
-	public List<JavaSourceTokenInfo> parsingJava(List<JavaSourceTokenInfo> tokenList, Java8Parser parser, List<Integer> reservedWordList) {
+	public List<JavaSourceTokenInfo> parsingJavaToSQL(List<JavaSourceTokenInfo> tokenList, Java8Parser parser, List<Integer> reservedWordList) {
 		
-		Log.debug("ParsingSvr.parsingJava Start~!!");
+		Log.debug("ParsingSvr.parsingJavaToSQL Start~!!");
 		
 		List<JavaSourceTokenInfo> parsingResultList = new ArrayList<>();
 		
-		Map<String, String> columnMap = new LinkedHashMap<>();
+		Map<String, String> sqlStateMap = new LinkedHashMap<>();
+		
+		int tokenIdx = 1;
+		int tokenSize = tokenList.size();
+		int sqlStartIdx = 0;
+		
+		//sql 정보 저장
+		for(; tokenIdx<tokenSize; tokenIdx++) {
+			String tokenName = tokenList.get(tokenIdx).getTokenName();
+			int symbolNo = tokenList.get(tokenIdx).getSymbolNo();
+			
+			if(tokenInfoSvr.checkReservedWord(symbolNo, reservedWordList)) {
+				break;
+			} else if (symbolNo == Java8Parser.Identifier) {
+				// skip
+			} else if(symbolNo == Java8Parser.StringLiteral) {
+				sqlStateMap.put(tokenName, tokenName);
+			}
+		}
+		
+		for(String key : sqlStateMap.keySet()) {
+			String columnName = sqlStateMap.get(key);
+			//parsingResultList.add(tokenInfoCreateDto.toEntity(columnName, key, tableMap.get(tableKey)));
+		}
 		
 		return parsingResultList;
 	}

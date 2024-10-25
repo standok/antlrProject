@@ -83,9 +83,8 @@ public class TokenInfoSvc implements ITokenInfoSvc {
 			
 			// 변경할 라인 찾기
 			
-			
-			// 실제 SQL을 파싱하는 로직
-			List<JavaSourceTokenInfo> parsingResultList = parsingSvc.parsingJava(tokenList, parser, reservedWordList);
+			// SQL문만 가져오기
+			List<JavaSourceTokenInfo> parsingSqlList = parsingSvc.parsingJavaToSQL(tokenList, parser, reservedWordList);
 			
 			Log.debug("["+i+"] Output Result-------------------------");
 //			Log.logListToString(parser, parsingResultList);
