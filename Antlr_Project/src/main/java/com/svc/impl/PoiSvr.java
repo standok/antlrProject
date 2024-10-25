@@ -36,72 +36,72 @@ public class PoiSvr implements IPoiSvr {
         	InputStream in = new FileInputStream(file);
         	
         			
-            // ¿¢¼¿ 97 - 2003 ±îÁö´Â HSSF(xls),  ¿¢¼¿ 2007 ÀÌ»óÀº XSSF(xlsx)
+            // ì—‘ì…€ 97 - 2003 ê¹Œì§€ëŠ” HSSF(xls),  ì—‘ì…€ 2007 ì´ìƒì€ XSSF(xlsx)
             if (file.getName().endsWith(".xls")) {
             	workbook = new HSSFWorkbook(in);
             } else {
                 workbook = new XSSFWorkbook(in);
             }
         	
-            // ¿¢¼¿ÆÄÀÏ¿¡¼­ Ã¹¹øÂ° ½ÃÆ® ºÒ·¯¿À±â
-            Sheet worksheet = workbook.getSheet("Å×ÀÌºíÁ¤ÀÇ¼­");
+            // ì—‘ì…€íŒŒì¼ì—ì„œ ì²«ë²ˆì§¸ ì‹œíŠ¸ ë¶ˆëŸ¬ì˜¤ê¸°
+            Sheet worksheet = workbook.getSheet("í…Œì´ë¸”ì •ì˜ì„œ");
             
             String currentTableId = "";
             
-            // getPhysicalNumberOfRow ´Â ÇàÀÇ °¹¼ö¸¦ ºÒ·¯¿À´Â ¸Å¼Òµå
+            // getPhysicalNumberOfRow ëŠ” í–‰ì˜ ê°¯ìˆ˜ë¥¼ ë¶ˆëŸ¬ì˜¤ëŠ” ë§¤ì†Œë“œ
             for (int i = 6; i < worksheet.getPhysicalNumberOfRows(); i++) {
 
-            	// i¹øÂ° Çà Á¤º¸ °¡Á®¿À±â
+            	// ië²ˆì§¸ í–‰ ì •ë³´ ê°€ì ¸ì˜¤ê¸°
                 Row row = worksheet.getRow(i);
 
                 if (row != null) {
                 	
-                	// ºñ°í°¡ 'À¯Áö'°¡ ¾Æ´Ñ°æ¿ì skip
-//                	String etc = getValue(row.getCell(16));	// ºñ°í                	
-//                	if(null == etc || !"À¯Áö".equals(etc)) continue;
+                	// ë¹„ê³ ê°€ 'ìœ ì§€'ê°€ ì•„ë‹Œê²½ìš° skip
+//                	String etc = getValue(row.getCell(16));	// ë¹„ê³                 	
+//                	if(null == etc || !"ìœ ì§€".equals(etc)) continue;
 
                 	String oldTableId = getValue(row.getCell(6));
                 	String oldColumnId = getValue(row.getCell(9));
                 	
-                	// currentTableId ÃÊ±âÈ­
+                	// currentTableId ì´ˆê¸°í™”
                 	if("".equals(currentTableId)) currentTableId = oldTableId;
                 	
-                	// °°Àº Å×ÀÌºí³¢¸® rtnMap¿¡ ÀúÀå
-                	// »õ·Î¿î Å×ÀÌºíÀÌ µé¾î¿ÔÀ»°æ¿ì dataMap ÃÊ±âÈ­
+                	// ê°™ì€ í…Œì´ë¸”ë¼ë¦¬ rtnMapì— ì €ì¥
+                	// ìƒˆë¡œìš´ í…Œì´ë¸”ì´ ë“¤ì–´ì™”ì„ê²½ìš° dataMap ì´ˆê¸°í™”
                 	if(!currentTableId.equals(oldTableId)) {
-                		if(rtnMap.containsKey(currentTableId)) throw new Exception("°°ÀºÅ×ÀÌºíÁ¸Àç È®ÀÎÇÊ");
+                		if(rtnMap.containsKey(currentTableId)) throw new Exception("ê°™ì€í…Œì´ë¸”ì¡´ì¬ í™•ì¸í•„");
                 		rtnMap.put(currentTableId, dataMap);
                 		dataMap = new HashMap<String, DataMapDefinitionVo>();
                 	}
                 	
-                	// ¿¢¼¿ µ¥ÀÌÅÍ ÀÔ·Â
+                	// ì—‘ì…€ ë°ì´í„° ì…ë ¥
                 	dataVo = new DataMapDefinitionVo();
-                	dataVo.setOldTableId(oldTableId);						// (±¸)¿µ¹®Å×ÀÌºíID-´ë¹®ÀÚ
-                	dataVo.setOldTableName(getValue(row.getCell(7)));		// [1](±¸)ÇÑ±ÛÅ×ÀÌºí¸í
-                	dataVo.setOldColumnId(oldColumnId);						// [2](±¸)¿µ¹®ÇÊµåID-´ë¹®ÀÚ
-                	dataVo.setOldColumnName(getValue(row.getCell(10)));		// [3](±¸)ÇÑ±ÛÇÊµå¸í
-                	dataVo.setOldDataType(getValue(row.getCell(11)));		// [4](±¸)µ¥ÀÌÅÍ¼Ó¼º
-                	dataVo.setOldDataLength(getValue(row.getCell(12)));		// [5](±¸)µ¥ÀÌÅÍ±æÀÌ
+                	dataVo.setOldTableId(oldTableId);						// (êµ¬)ì˜ë¬¸í…Œì´ë¸”ID-ëŒ€ë¬¸ì
+                	dataVo.setOldTableName(getValue(row.getCell(7)));		// [1](êµ¬)í•œê¸€í…Œì´ë¸”ëª…
+                	dataVo.setOldColumnId(oldColumnId);						// [2](êµ¬)ì˜ë¬¸í•„ë“œID-ëŒ€ë¬¸ì
+                	dataVo.setOldColumnName(getValue(row.getCell(10)));		// [3](êµ¬)í•œê¸€í•„ë“œëª…
+                	dataVo.setOldDataType(getValue(row.getCell(11)));		// [4](êµ¬)ë°ì´í„°ì†ì„±
+                	dataVo.setOldDataLength(getValue(row.getCell(12)));		// [5](êµ¬)ë°ì´í„°ê¸¸ì´
 
-                	dataVo.setNewTableId(getValue(row.getCell(18)));		// (½Å)¿µ¹®Å×ÀÌºíID-´ë¹®ÀÚ
-                	dataVo.setNewTableName(getValue(row.getCell(19)));		// [6](½Å)ÇÑ±ÛÅ×ÀÌºí¸í
-                	dataVo.setNewColumnId(getValue(row.getCell(21)));		// [7](½Å)¿µ¹®ÇÊµåID-´ë¹®ÀÚ
-                	dataVo.setNewColumnName(getValue(row.getCell(22)));		// [8](½Å)ÇÑ±ÛÇÊµå¸í
-                	dataVo.setNewDataType(getValue(row.getCell(23)));		// [9](½Å)µ¥ÀÌÅÍ¼Ó¼º
-                	dataVo.setNewDataLength(getValue(row.getCell(24)));		// [10](½Å)µ¥ÀÌÅÍ±æÀÌ
+                	dataVo.setNewTableId(getValue(row.getCell(18)));		// (ì‹ )ì˜ë¬¸í…Œì´ë¸”ID-ëŒ€ë¬¸ì
+                	dataVo.setNewTableName(getValue(row.getCell(19)));		// [6](ì‹ )í•œê¸€í…Œì´ë¸”ëª…
+                	dataVo.setNewColumnId(getValue(row.getCell(21)));		// [7](ì‹ )ì˜ë¬¸í•„ë“œID-ëŒ€ë¬¸ì
+                	dataVo.setNewColumnName(getValue(row.getCell(22)));		// [8](ì‹ )í•œê¸€í•„ë“œëª…
+                	dataVo.setNewDataType(getValue(row.getCell(23)));		// [9](ì‹ )ë°ì´í„°ì†ì„±
+                	dataVo.setNewDataLength(getValue(row.getCell(24)));		// [10](ì‹ )ë°ì´í„°ê¸¸ì´
                 	
-                	String Àû¿ë»óÅÂ = getValue(row.getCell(28));			// Àû¿ë»óÅÂ(ÁØ¿ë, ½ÅÃ»Áß)
+                	String ì ìš©ìƒíƒœ = getValue(row.getCell(28));			// ì ìš©ìƒíƒœ(ì¤€ìš©, ì‹ ì²­ì¤‘)
 
-                	dataVo.setConvert(false);								// [11]ÀüÈ¯¿©ºÎ
-                	if(!"ÁØ¿ë".equals(Àû¿ë»óÅÂ) && !"".equals(Àû¿ë»óÅÂ.trim())) dataVo.setConvert(true);
+                	dataVo.setConvert(false);								// [11]ì „í™˜ì—¬ë¶€
+                	if(!"ì¤€ìš©".equals(ì ìš©ìƒíƒœ) && !"".equals(ì ìš©ìƒíƒœ.trim())) dataVo.setConvert(true);
                 	
-                	dataVo.setConvertRule("");							// [12]º¯È¯ ±ÔÄ¢
+                	dataVo.setConvertRule("");							// [12]ë³€í™˜ ê·œì¹™
                 	
                 	dataMap.put(oldColumnId, dataVo);
                 }                
             }
             
-            // ¸¶Áö¸· Å×ÀÌºí ÀúÀå
+            // ë§ˆì§€ë§‰ í…Œì´ë¸” ì €ì¥
             rtnMap.put(currentTableId, dataMap);
 
             workbook.close();
@@ -125,52 +125,52 @@ public class PoiSvr implements IPoiSvr {
 
         try {
         			
-            // ¿¢¼¿ 97 - 2003 ±îÁö´Â HSSF(xls),  ¿¢¼¿ 2007 ÀÌ»óÀº XSSF(xlsx)
+            // ì—‘ì…€ 97 - 2003 ê¹Œì§€ëŠ” HSSF(xls),  ì—‘ì…€ 2007 ì´ìƒì€ XSSF(xlsx)
             if (file.getName().endsWith(".xls")) {
             	workbook = new HSSFWorkbook(in);
             } else {
                 workbook = new XSSFWorkbook(in);
             }
         	
-            // ¿¢¼¿ÆÄÀÏ¿¡¼­ Ã¹¹øÂ° ½ÃÆ® ºÒ·¯¿À±â
-            Sheet worksheet = workbook.getSheet("Å×ÀÌºíÁ¤ÀÇ¼­");
+            // ì—‘ì…€íŒŒì¼ì—ì„œ ì²«ë²ˆì§¸ ì‹œíŠ¸ ë¶ˆëŸ¬ì˜¤ê¸°
+            Sheet worksheet = workbook.getSheet("í…Œì´ë¸”ì •ì˜ì„œ");
             
-            // getPhysicalNumberOfRow ´Â ÇàÀÇ °¹¼ö¸¦ ºÒ·¯¿À´Â ¸Å¼Òµå
+            // getPhysicalNumberOfRow ëŠ” í–‰ì˜ ê°¯ìˆ˜ë¥¼ ë¶ˆëŸ¬ì˜¤ëŠ” ë§¤ì†Œë“œ
             for (int i = 6; i < worksheet.getPhysicalNumberOfRows(); i++) {
 
-            	// i¹øÂ° Çà Á¤º¸ °¡Á®¿À±â
+            	// ië²ˆì§¸ í–‰ ì •ë³´ ê°€ì ¸ì˜¤ê¸°
                 Row row = worksheet.getRow(i);
 
                 if (row != null) {
                 	
-                	String etc = getValue(row.getCell(16));	// ºñ°í
+                	String etc = getValue(row.getCell(16));	// ë¹„ê³ 
                 	
-                	if(null == etc || !"À¯Áö".equals(etc)) continue;
+                	if(null == etc || !"ìœ ì§€".equals(etc)) continue;
                 	
                 	/**
-                	 *  ¿¢¼¿ µ¥ÀÌÅÍ ÀÔ·Â
+                	 *  ì—‘ì…€ ë°ì´í„° ì…ë ¥
                 	 */
                 	temp = new DataMapDefinitionVo();
-                	temp.setOldTableId(getValue(row.getCell(6)));		// (±¸)¿µ¹®Å×ÀÌºíID-´ë¹®ÀÚ
-                	temp.setOldTableName(getValue(row.getCell(7)));		// [1](±¸)ÇÑ±ÛÅ×ÀÌºí¸í
-                	temp.setOldColumnId(getValue(row.getCell(9)));		// [2](±¸)¿µ¹®ÇÊµåID-´ë¹®ÀÚ
-                	temp.setOldColumnName(getValue(row.getCell(10)));	// [3](±¸)ÇÑ±ÛÇÊµå¸í
-                	temp.setOldDataType(getValue(row.getCell(11)));		// [4](±¸)µ¥ÀÌÅÍ¼Ó¼º
-                	temp.setOldDataLength(getValue(row.getCell(12)));	// [5](±¸)µ¥ÀÌÅÍ±æÀÌ
+                	temp.setOldTableId(getValue(row.getCell(6)));		// (êµ¬)ì˜ë¬¸í…Œì´ë¸”ID-ëŒ€ë¬¸ì
+                	temp.setOldTableName(getValue(row.getCell(7)));		// [1](êµ¬)í•œê¸€í…Œì´ë¸”ëª…
+                	temp.setOldColumnId(getValue(row.getCell(9)));		// [2](êµ¬)ì˜ë¬¸í•„ë“œID-ëŒ€ë¬¸ì
+                	temp.setOldColumnName(getValue(row.getCell(10)));	// [3](êµ¬)í•œê¸€í•„ë“œëª…
+                	temp.setOldDataType(getValue(row.getCell(11)));		// [4](êµ¬)ë°ì´í„°ì†ì„±
+                	temp.setOldDataLength(getValue(row.getCell(12)));	// [5](êµ¬)ë°ì´í„°ê¸¸ì´
 
-                	temp.setNewTableId(getValue(row.getCell(18)));		// (½Å)¿µ¹®Å×ÀÌºíID-´ë¹®ÀÚ
-                	temp.setNewTableName(getValue(row.getCell(19)));		// [6](½Å)ÇÑ±ÛÅ×ÀÌºí¸í
-                	temp.setNewColumnId(getValue(row.getCell(21)));		// [7](½Å)¿µ¹®ÇÊµåID-´ë¹®ÀÚ
-                	temp.setNewColumnName(getValue(row.getCell(22)));	// [8](½Å)ÇÑ±ÛÇÊµå¸í
-                	temp.setNewDataType(getValue(row.getCell(23)));		// [9](½Å)µ¥ÀÌÅÍ¼Ó¼º
-                	temp.setNewDataLength(getValue(row.getCell(24)));	// [10](½Å)µ¥ÀÌÅÍ±æÀÌ
+                	temp.setNewTableId(getValue(row.getCell(18)));		// (ì‹ )ì˜ë¬¸í…Œì´ë¸”ID-ëŒ€ë¬¸ì
+                	temp.setNewTableName(getValue(row.getCell(19)));		// [6](ì‹ )í•œê¸€í…Œì´ë¸”ëª…
+                	temp.setNewColumnId(getValue(row.getCell(21)));		// [7](ì‹ )ì˜ë¬¸í•„ë“œID-ëŒ€ë¬¸ì
+                	temp.setNewColumnName(getValue(row.getCell(22)));	// [8](ì‹ )í•œê¸€í•„ë“œëª…
+                	temp.setNewDataType(getValue(row.getCell(23)));		// [9](ì‹ )ë°ì´í„°ì†ì„±
+                	temp.setNewDataLength(getValue(row.getCell(24)));	// [10](ì‹ )ë°ì´í„°ê¸¸ì´
                 	
-                	String Àû¿ë»óÅÂ = getValue(row.getCell(28));			// Àû¿ë»óÅÂ(ÁØ¿ë, ½ÅÃ»Áß)
+                	String ì ìš©ìƒíƒœ = getValue(row.getCell(28));			// ì ìš©ìƒíƒœ(ì¤€ìš©, ì‹ ì²­ì¤‘)
 
-                	temp.setConvert(false);								// [11]ÀüÈ¯¿©ºÎ
-                	if(!"ÁØ¿ë".equals(Àû¿ë»óÅÂ) && !"".equals(Àû¿ë»óÅÂ.trim())) temp.setConvert(true);
+                	temp.setConvert(false);								// [11]ì „í™˜ì—¬ë¶€
+                	if(!"ì¤€ìš©".equals(ì ìš©ìƒíƒœ) && !"".equals(ì ìš©ìƒíƒœ.trim())) temp.setConvert(true);
                 	
-                	temp.setConvertRule("");							// [12]º¯È¯ ±ÔÄ¢
+                	temp.setConvertRule("");							// [12]ë³€í™˜ ê·œì¹™
                 	
                 	rtnList.add(temp);
                 }
@@ -194,22 +194,22 @@ public class PoiSvr implements IPoiSvr {
 	
 	public String getValue(Cell cell) {
 
-        // ³¯Â¥Æ÷¸Ë
+        // ë‚ ì§œí¬ë§·
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		
-        // return º¯¼ö
+        // return ë³€ìˆ˜
         String value = "";
 		
 		if (cell == null) {
             return null;
         } else {
-            // Å¸ÀÔº°·Î ³»¿ë ÀĞ±â
+            // íƒ€ì…ë³„ë¡œ ë‚´ìš© ì½ê¸°
             switch (cell.getCellType()) {
                case FORMULA:
                   value = cell.getCellFormula();
                   break;
                case NUMERIC:
-//                  if (HSSFDateUtil.isCellDateFormatted(cell)) { // ¼ıÀÚ- ³¯Â¥ Å¸ÀÔÀÌ´Ù.
+//                  if (HSSFDateUtil.isCellDateFormatted(cell)) { // ìˆ«ì- ë‚ ì§œ íƒ€ì…ì´ë‹¤.
 //                       value = formatter.format(cell.getDateCellValue());
 //                  } else {
                        double numericCellValue = cell.getNumericCellValue();
@@ -236,7 +236,7 @@ public class PoiSvr implements IPoiSvr {
             }                                  
         }
 		
-		// °ø¹éÁ¦°Å
+		// ê³µë°±ì œê±°
 		value = value.replaceAll(" ", "");
 		
 		return value;

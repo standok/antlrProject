@@ -5,8 +5,8 @@ public class JavaSourceTokenInfo {
 	private String tokenName;		// Token Name   - import
 	private String symbolicId;		// Symbolic Id	- IMPORT
 	private int symbolNo;			// Symbolic No	- [25]
-	private String varType;			// º¯¼öÅ¸ÀÔ
-	private String varName;			// º¯¼ö¸í
+	private String varType;			// ë³€ìˆ˜íƒ€ìž…
+	private String varName;			// ë³€ìˆ˜ëª…
 	
 	public String getTokenName() {
 		return tokenName;

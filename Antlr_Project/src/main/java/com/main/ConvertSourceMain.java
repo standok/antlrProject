@@ -16,10 +16,10 @@ public class ConvertSourceMain {
 	
 	public static void main(String[] args) {
 		
-		// DataManager ÃÊ±âÈ­(ÀÓ½Ã)
+		// DataManager ì´ˆê¸°í™”(ì„ì‹œ)
 		String tmp = DataManager.getNewColumnId("", "");
 		
-		// ¼Ò½º Æú´õ setting
+		// ì†ŒìŠ¤ í´ë” setting
 		String DATA_DIRECTORY = System.getProperty("user.dir") + "/files/";
 		File dir = new File(DATA_DIRECTORY);
 		
@@ -37,11 +37,11 @@ public class ConvertSourceMain {
 		}
 		
 		Log.debug("=============================================");
-		Log.debug("convert Java File ÀüÃ¼°Ç¼ö = ["+javaFileList.size()+"]");
-		Log.debug("convert Sql File ÀüÃ¼°Ç¼ö = ["+sqlFileList.size()+"]");
+		Log.debug("convert Java File ì „ì²´ê±´ìˆ˜ = ["+javaFileList.size()+"]");
+		Log.debug("convert Sql File ì „ì²´ê±´ìˆ˜ = ["+sqlFileList.size()+"]");
 		Log.debug("=============================================");
 		
-		// Java ÆÄÀÏ Parsing
+		// Java íŒŒì¼ Parsing
 		for(int i=0; i<javaFileList.size(); i++) {
 			File file = javaFileList.get(i);
 			Log.debug("["+i+"]=============================================");
@@ -50,10 +50,10 @@ public class ConvertSourceMain {
 			convertJavaSource(file);
 		}
 		
-		// SQL ÆÄÀÏ Parsing
-//		for(File file : sqlFileList) {
-//			convertSQLSource(file);
-//		}
+		// SQL íŒŒì¼ Parsing
+		for(File file : sqlFileList) {
+			convertSQLSource(file);
+		}
 	}
 	
 	public static void convertJavaSource(File file) {

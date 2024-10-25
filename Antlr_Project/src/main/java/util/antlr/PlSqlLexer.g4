@@ -33,12 +33,12 @@ options {
 #include <PlSqlLexerBase.h>
 }
 
-TEMP_TABLE                     : '#'[a-zA-Z_0-9¤¡-¤¾°¡-ÆR]*;			// 2023.12.14 ÀÓ½ÃÅ×ÀÌºí ¹®¹ý ÇÑ±Û Ãß°¡ LEEKIJONG
-ADWOWN_TABLE                   : 'ADWOWN.'[a-zA-Z_0-9]*;			// 2023.11.17 ADWOWN Å×ÀÌºí ¹®¹ý Ãß°¡ LEEKIJONG
-SUM_USER                       : 'SUM('[a-zA-Z_0-9¤¡-¤¾°¡-ÆR]*')';	
-TRIM_USER                      : 'TRIM('[a-zA-Z_0-9¤¡-¤¾°¡-ÆR]*')';	// 2023.12.15 TRIM ¹®¹ý Ãß°¡ LEEKIJONG
-LTRIM_USER                     : 'LTRIM('[a-zA-Z_0-9¤¡-¤¾°¡-ÆR]*')';	// 2023.12.15 TRIM ¹®¹ý Ãß°¡ LEEKIJONG
-RTRIM_USER                     : 'RTRIM('[a-zA-Z_0-9¤¡-¤¾°¡-ÆR]*')';	// 2023.12.15 TRIM ¹®¹ý Ãß°¡ LEEKIJONG
+TEMP_TABLE                     : '#'[a-zA-Z_0-9ã„±-ã…Žê°€-íž£]*;			// 2023.12.14 LEEKIJONG
+ADWOWN_TABLE                   : 'ADWOWN.'[A-Z_0-9]*;				// 2023.11.17 ADWOWN LEEKIJONG
+SUM_USER                       : 'SUM('[a-zA-Z_0-9ã„±-ã…Žê°€-íž£]*')';	
+TRIM_USER                      : 'TRIM('[a-zA-Z_0-9ã„±-ã…Žê°€-íž£]*')';	// 2023.12.15 TRIM LEEKIJONG
+LTRIM_USER                     : 'LTRIM('[a-zA-Z_0-9ã„±-ã…Žê°€-íž£]*')';	// 2023.12.15 TRIM LEEKIJONG
+RTRIM_USER                     : 'RTRIM('[a-zA-Z_0-9ã„±-ã…Žê°€-íž£]*')';	// 2023.12.15 TRIM LEEKIJONG
 
 ABORT                          : 'ABORT';
 ABS                            : 'ABS';
@@ -2521,7 +2521,7 @@ SPACES: [ \t\r\n]+ -> skip;
 fragment NEWLINE_EOF    : NEWLINE | EOF;
 fragment QUESTION_MARK  : '?';
 //fragment SIMPLE_LETTER  : [\p{Letter}];
-fragment SIMPLE_LETTER  : [A-Za-z0-9¤¡-¤¾°¡-ÆR];
+fragment SIMPLE_LETTER  : [a-zA-Z_0-9ã„±-ã…Žê°€-íž£];
 fragment FLOAT_FRAGMENT : UNSIGNED_INTEGER* '.'? UNSIGNED_INTEGER+;
 fragment NEWLINE        : '\r'? '\n';
 fragment SPACE          : [ \t];

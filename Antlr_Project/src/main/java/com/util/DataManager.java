@@ -65,9 +65,9 @@ public class DataManager {
 		double diffTime = afterTime - beforeTime;
 
 		Log.debug("=======================");
-		Log.debug("== ¿¢¼¿ ÆÄÀÏÀĞ±â finished time ["+diffTime/1000+"/Sec]");
-		Log.debug("== Å×ÀÌºí°Ç¼ö tableNum : ["+tableNum+"]");
-		Log.debug("== ÀüÃ¼°Ç¼ö totNum : ["+totNum+"]");
+		Log.debug("== ì—‘ì…€ íŒŒì¼ì½ê¸° finished time ["+diffTime/1000+"/Sec]");
+		Log.debug("== í…Œì´ë¸”ê±´ìˆ˜ tableNum : ["+tableNum+"]");
+		Log.debug("== ì „ì²´ê±´ìˆ˜ totNum : ["+totNum+"]");
 		Log.debug("=======================");
 	}
 	

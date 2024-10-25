@@ -31,7 +31,7 @@ import util.antlr.PlSqlParser;
 public class TokenInfoSvc implements ITokenInfoSvc {
 	
 	/**
-	 * ¼³¸í : ÆÄÀÏ ¿ÀÇÂ
+	 * ì„¤ëª… : íŒŒì¼ ì˜¤í”ˆ
 	 */
 	public void parsing(File file) throws IOException {
 		
@@ -54,7 +54,7 @@ public class TokenInfoSvc implements ITokenInfoSvc {
 	}
 	
 	/**
-	 * ¼³¸í : SQL ÆÄ½Ì
+	 * ì„¤ëª… : SQL íŒŒì‹±
 	 */
 	public void parsingJava(StringBuilder sb) throws IOException {
 		
@@ -81,11 +81,11 @@ public class TokenInfoSvc implements ITokenInfoSvc {
 			List<JavaSourceTokenInfo> tokenList = javaMethodList.get(i);
 			Log.printInfomation(lexer, parser, vocabulary, tokenList);
 			
-			// º¯°æÇÒ ¶óÀÎ Ã£±â
+			// ë³€ê²½í•  ë¼ì¸ ì°¾ê¸°
 			
 			
-			// ½ÇÁ¦ SQLÀ» ÆÄ½ÌÇÏ´Â ·ÎÁ÷
-			List<TokenInfo> parsingResultList = parsingSvc.parsingJava(tokenList, parser, reservedWordList);
+			// ì‹¤ì œ SQLì„ íŒŒì‹±í•˜ëŠ” ë¡œì§
+			List<JavaSourceTokenInfo> parsingResultList = parsingSvc.parsingJava(tokenList, parser, reservedWordList);
 			
 			Log.debug("["+i+"] Output Result-------------------------");
 //			Log.logListToString(parser, parsingResultList);
@@ -96,7 +96,7 @@ public class TokenInfoSvc implements ITokenInfoSvc {
 	}
 	
 	/**
-	 * ¼³¸í : ÅäÅ« ±¸ºĞ °á°ú¸¦ List¿¡ ÀúÀå ÈÄ ¹İÈ¯ / ÁÖ¼®, ÇÇ·æ¾ø´Â sql¹® ±¸º° ±â´É Ãß°¡ÇØ¾ßÇÔ.
+	 * ì„¤ëª… : í† í° êµ¬ë¶„ ê²°ê³¼ë¥¼ Listì— ì €ì¥ í›„ ë°˜í™˜ / ì£¼ì„, í”¼ë£¡ì—†ëŠ” sqlë¬¸ êµ¬ë³„ ê¸°ëŠ¥ ì¶”ê°€í•´ì•¼í•¨.
 	 */
 	public List<List<JavaSourceTokenInfo>> addJavaList(Java8Lexer lexer, Java8Parser parser, CommonTokenStream tokenStream, Vocabulary vocabulary) {
 		
@@ -131,7 +131,7 @@ public class TokenInfoSvc implements ITokenInfoSvc {
 	}
 	
 	/**
-	 * ¼³¸í : SQL ÆÄ½Ì
+	 * ì„¤ëª… : SQL íŒŒì‹±
 	 */
 	public void parsingSql(StringBuilder sb) throws IOException {
 
@@ -156,7 +156,7 @@ public class TokenInfoSvc implements ITokenInfoSvc {
 			List<TokenInfo> tokenList = sqlList.get(i);
 			Log.printInfomation(lexer, parser, vocabulary, tokenList);
 			
-			// ½ÇÁ¦ SQLÀ» ÆÄ½ÌÇÏ´Â ·ÎÁ÷
+			// ì‹¤ì œ SQLì„ íŒŒì‹±í•˜ëŠ” ë¡œì§
 			List<TokenInfo> parsingResultList = parsingSvc.parsingSql(tokenList, parser, reservedWordList);
 			
 			Log.debug("["+i+"] Output Result-------------------------");
@@ -168,7 +168,7 @@ public class TokenInfoSvc implements ITokenInfoSvc {
 	}
 	
 	/**
-	 * ¼³¸í : ÅäÅ« ±¸ºĞ °á°ú¸¦ List¿¡ ÀúÀå ÈÄ ¹İÈ¯ / ÁÖ¼®, ÇÇ·æ¾ø´Â sql¹® ±¸º° ±â´É Ãß°¡ÇØ¾ßÇÔ.
+	 * ì„¤ëª… : í† í° êµ¬ë¶„ ê²°ê³¼ë¥¼ Listì— ì €ì¥ í›„ ë°˜í™˜ / ì£¼ì„, í”¼ë£¡ì—†ëŠ” sqlë¬¸ êµ¬ë³„ ê¸°ëŠ¥ ì¶”ê°€í•´ì•¼í•¨.
 	 */
 	public List<List<TokenInfo>> addSqlList(PlSqlLexer lexer, PlSqlParser parser, TokenStream tokenStream, Vocabulary vocabulary) {
 		TokenInfoCreateDto tokenInfoCreateDto = new TokenInfoCreateDto();
@@ -198,7 +198,7 @@ public class TokenInfoSvc implements ITokenInfoSvc {
 	}
 
 	/**
-	 * ¼³¸í : ÆÄ¶ó¹ÌÅÍ°¡ ¿¹¾à¾î¿¡ ¼ÓÇÑ´Ù¸é true ¹İÈ¯, ¾Æ´Ï¸é false ¹İÈ¯
+	 * ì„¤ëª… : íŒŒë¼ë¯¸í„°ê°€ ì˜ˆì•½ì–´ì— ì†í•œë‹¤ë©´ true ë°˜í™˜, ì•„ë‹ˆë©´ false ë°˜í™˜
 	 */
 	@Override
 	public boolean checkReservedWord(int SymbolNo, List<Integer> reserveWordList) {
@@ -206,8 +206,8 @@ public class TokenInfoSvc implements ITokenInfoSvc {
 	}
 	
 	/**
-	 * ¼³¸í : ¿¹¾à¾î¿¡ ¼ÓÇÏ´Â ´Ü¾î Ãß°¡
-	 * TODO : PlSqlParser.g4 ÆÄÀÏ¿¡¼­ ¿¹¾à¾î¸¦ ±¸ºĞÇÏ´Â ¹®ÀåÀÌ ÀÖÀ»°ÍÀÌ´Ù. È®ÀÎ ÇØ¾ßÇÔ.
+	 * ì„¤ëª… : ì˜ˆì•½ì–´ì— ì†í•˜ëŠ” ë‹¨ì–´ ì¶”ê°€
+	 * TODO : PlSqlParser.g4 íŒŒì¼ì—ì„œ ì˜ˆì•½ì–´ë¥¼ êµ¬ë¶„í•˜ëŠ” ë¬¸ì¥ì´ ìˆì„ê²ƒì´ë‹¤. í™•ì¸ í•´ì•¼í•¨.
 	 */
 	public List<Integer> initReservedWordList(PlSqlParser parser) {
 		List<Integer> reservedWordList = new ArrayList<Integer>();

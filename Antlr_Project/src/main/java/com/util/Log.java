@@ -47,7 +47,7 @@ public class Log {
 			for(int j=0; j<24-(tokenName.length()-getKorCnt(tokenName)); j++) {
 				System.out.print(" ");
 			}
-			System.out.printf("	¡Ö	%s[%s]", symbolicId , symbolNo);
+			System.out.printf("	â‰’	%s[%s]", symbolicId , symbolNo);
 			
 			if(symbolNo == PlSqlParser.REGULAR_ID) System.out.print("*");
 			System.out.println();
@@ -68,7 +68,7 @@ public class Log {
 			for(int j=0; j<24-(tokenName.length()-getKorCnt(tokenName)); j++) {
 				System.out.print(" ");
 			}
-			System.out.printf("	¡Ö	%s[%s]", symbolicId , symbolNo);
+			System.out.printf("	â‰’	%s[%s]", symbolicId , symbolNo);
 			
 			if(symbolNo == PlSqlParser.REGULAR_ID) System.out.print("*");
 			System.out.println();
@@ -92,7 +92,7 @@ public class Log {
 		Log.debug("");
 		
 		Log.debug("--------------------------------------------------------------");
-		Log.debug("   #: Token/Syntax             ¡Ö Symbolic Id[SymbolNo]");
+		Log.debug("   #: Token/Syntax             â‰’ Symbolic Id[SymbolNo]");
 		Log.debug("--------------------------------------------------------------");
 		
 		for(int i=0; i<tokenList.size(); i++) {
@@ -104,7 +104,7 @@ public class Log {
 			for(int j=0; j<24-(tokenName.length()-getKorCnt(tokenName)); j++) {
 				System.out.print(" ");
 			}
-			System.out.printf(" ¡Ö %s[%s]", symbolicId , symbolNo);
+			System.out.printf(" â‰’ %s[%s]", symbolicId , symbolNo);
 			
 			if(symbolNo == Java8Parser.Identifier) System.out.print("*");
 			System.out.println();
@@ -118,7 +118,7 @@ public class Log {
 		Log.debug("[Antlr] Token/Syntax Count : ["+tokenList.size()+"]");
 		Log.debug("");
 		
-		Log.debug("   #: Token/Syntax             ¡Ö Symbolic Id[SymbolNo]");
+		Log.debug("   #: Token/Syntax             â‰’ Symbolic Id[SymbolNo]");
 		Log.debug("--------------------------------------------------------------");
 		
 		for(int i=0; i<tokenList.size(); i++) {
@@ -130,7 +130,7 @@ public class Log {
 			for(int j=0; j<24-(tokenName.length()-getKorCnt(tokenName)); j++) {
 				System.out.print(" ");
 			}
-			System.out.printf("	¡Ö	%s[%s]", symbolicId , symbolNo);
+			System.out.printf("	â‰’	%s[%s]", symbolicId , symbolNo);
 			
 			if(symbolNo == PlSqlParser.REGULAR_ID) System.out.print("*");
 			System.out.println();
@@ -142,7 +142,7 @@ public class Log {
 	public static int getKorCnt(String kor) {
 		int cnt = 0;
 		for(int i=0; i<kor.length(); i++) {
-			if(kor.charAt(i)>='°¡' && kor.charAt(i) <= 'ÆR') cnt++;			
+			if(kor.charAt(i)>='ê°€' && kor.charAt(i) <= 'íž£') cnt++;			
 		}
 		return cnt;
 	}

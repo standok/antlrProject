@@ -22,18 +22,20 @@ public class ParsingSvr implements IParsingSvr {
 	int tokenIdx;
 	
 
-	public List<TokenInfo> parsingJava(List<JavaSourceTokenInfo> tokenList, Java8Parser parser, List<Integer> reservedWordList) {
+	public List<JavaSourceTokenInfo> parsingJava(List<JavaSourceTokenInfo> tokenList, Java8Parser parser, List<Integer> reservedWordList) {
 		
 		Log.debug("ParsingSvr.parsingJava Start~!!");
 		
-		List<TokenInfo> parsingResultList = new ArrayList<>();
+		List<JavaSourceTokenInfo> parsingResultList = new ArrayList<>();
+		
+		Map<String, String> columnMap = new LinkedHashMap<>();
 		
 		return parsingResultList;
 	}
 		
 	
 	/**
-	 * ¼³¸í : SELECT SQL¹® Ã³¸® 
+	 * ì„¤ëª… : SELECT SQLë¬¸ ì²˜ë¦¬ 
 	 */
 	@Override
 	public List<TokenInfo> parsingSql(List<TokenInfo> tokenList, PlSqlParser parser, List<Integer> reservedWordList) {
@@ -51,12 +53,12 @@ public class ParsingSvr implements IParsingSvr {
 		tokenIdx = 1;
 		int tokenSize = tokenList.size();
 		
-		//Column Á¤º¸ ÀúÀå
+		//Column ì •ë³´ ì €ì¥
 		columnMap = addColumnMap(tokenSize, tokenList, parser, reservedWordList);
 		Log.debug("==columnMap==");
 		Log.logMapToString(columnMap);
 		
-		//table Á¤º¸ ÀúÀå
+		//table ì •ë³´ ì €ì¥
 		if(tokenList.get(tokenIdx).getSymbolNo() == PlSqlParser.FROM) {
 			tokenIdx++;
 			tableMap = addTableMap(tokenSize, tokenList, parser, reservedWordList);
@@ -64,9 +66,9 @@ public class ParsingSvr implements IParsingSvr {
 		Log.debug("==tableMap==");
 		Log.logMapToString(tableMap);
 		
-		//where¹® Á¤º¸ ÀúÀå
+		//whereë¬¸ ì •ë³´ ì €ì¥
 		whereStr = addWhereStr(tokenSize, tokenList); 
-		Log.debug(whereStr);;
+		Log.debug(whereStr);
 		
 		for(String key : columnMap.keySet()) {
 			String columnName = columnMap.get(key);
@@ -90,7 +92,7 @@ public class ParsingSvr implements IParsingSvr {
 	}
 	
 	/**
-	 * ¼³¸í : ÅäÅ« ºĞ¼® ÈÄ Column Map »ı¼º
+	 * ì„¤ëª… : í† í° ë¶„ì„ í›„ Column Map ìƒì„±
 	 */
 	public Map<String, String> addColumnMap(int tokenSize, List<TokenInfo> tokenList, PlSqlParser parser, List<Integer> reservedWordList) {
 		Map<String, String> aliasMap = new LinkedHashMap<>();
@@ -127,7 +129,7 @@ public class ParsingSvr implements IParsingSvr {
 	}
 	
 	/**
-	 * ¼³¸í : ÅäÅ« ºĞ¼® ÈÄ Table Map »ı¼º
+	 * ì„¤ëª… : í† í° ë¶„ì„ í›„ Table Map ìƒì„±
 	 */
 	public Map<String, String> addTableMap(int tokenSize, List<TokenInfo> tokenList, PlSqlParser parser, List<Integer> reservedWordList) {
 		Map<String, String> aliasMap = new LinkedHashMap<String, String>();
@@ -158,7 +160,7 @@ public class ParsingSvr implements IParsingSvr {
 	}
 	
 	/**
-	 * ¼³¸í : ÅäÅ« ºĞ¼® ÈÄ Where Map »ı¼º
+	 * ì„¤ëª… : í† í° ë¶„ì„ í›„ Where Map ìƒì„±
 	 */
 	public String addWhereStr(int tokenSize, List<TokenInfo> tokenList) {
 		String whereStr = "";

@@ -1117,6 +1117,9 @@ ELLIPSIS : '...';
 WS  :  [ \t\r\n\u000C]+ -> skip
     ;
 
+SINGLE_LINE_COMMENT : '--' ~('\r' | '\n')* NEWLINE_EOF -> channel(HIDDEN);
+MULTI_LINE_COMMENT  : '/*' .*? '*/'                    -> channel(HIDDEN);
+
 COMMENT
     :   '/*' .*? '*/' 
     ;
@@ -1124,6 +1127,12 @@ COMMENT
 LINE_COMMENT
     :   '//' ~[\r\n]* 
     ;
+    
+fragment NEWLINE_EOF    : NEWLINE | EOF;
+fragment QUESTION_MARK  : '?';
+fragment SIMPLE_LETTER  : [a-zA-Z_0-9ㄱ-ㅎ가-힣]*;
+fragment NEWLINE        : '\r'? '\n';
+fragment SPACE          : [ \t];
 
 //COMMENT  (2020.07.13)
 //    :   '/*' .*? '*/' -> skip

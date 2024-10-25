@@ -1,9 +1,9 @@
 package com.domain;
 
 public class TokenInfo {
-	private String tokenName;		// Column ¿Ã∏ß	- V_BASE_YMD
-	private String aliasName;		// Alias ¿Ã∏ß		- ±‚¡ÿ¿œ¿⁄
-	private String tableName;		// Table ¿Ã∏ß		- TB_IIS_ACIF_I_A
+	private String tokenName;		// Column Ïù¥Î¶Ñ	- V_BASE_YMD
+	private String aliasName;		// Alias Ïù¥Î¶Ñ		- Í∏∞Ï§ÄÏùºÏûê
+	private String tableName;		// Table Ïù¥Î¶Ñ		- TB_IIS_ACIF_I_A
 	private String symbolicId;		// Symbolic Id	- REGULAR_ID
 	private int symbolNo;			// Symbolic No	- 2250
 	

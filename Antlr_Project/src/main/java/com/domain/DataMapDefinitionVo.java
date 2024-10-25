@@ -2,22 +2,22 @@ package com.domain;
 
 public class DataMapDefinitionVo {
 
-	private String oldTableId;			// (±¸)¿µ¹®Å×ÀÌºíID-´ë¹®ÀÚ	
-	private String oldTableName;		// [1](±¸)ÇÑ±ÛÅ×ÀÌºí¸í
-	private String oldColumnId;			// [2](±¸)¿µ¹®ÇÊµåID-´ë¹®ÀÚ
-	private String oldColumnName;		// [3](±¸)ÇÑ±ÛÇÊµå¸í
-	private String oldDataType;			// [4](±¸)µ¥ÀÌÅÍ¼Ó¼º
-	private String oldDataLength;		// [5](±¸)µ¥ÀÌÅÍ±æÀÌ
+	private String oldTableId;			// (êµ¬)ì˜ë¬¸í…Œì´ë¸”ID-ëŒ€ë¬¸ì	
+	private String oldTableName;		// [1](êµ¬)í•œê¸€í…Œì´ë¸”ëª…
+	private String oldColumnId;			// [2](êµ¬)ì˜ë¬¸í•„ë“œID-ëŒ€ë¬¸ì
+	private String oldColumnName;		// [3](êµ¬)í•œê¸€í•„ë“œëª…
+	private String oldDataType;			// [4](êµ¬)ë°ì´í„°ì†ì„±
+	private String oldDataLength;		// [5](êµ¬)ë°ì´í„°ê¸¸ì´
 
-	private String newTableId;			// (½Å)¿µ¹®Å×ÀÌºíID-´ë¹®ÀÚ
-	private String newTableName;		// [6](½Å)ÇÑ±ÛÅ×ÀÌºí¸í
-	private String newColumnId;			// [7](½Å)¿µ¹®ÇÊµåID-´ë¹®ÀÚ
-	private String newColumnName;		// [8](½Å)ÇÑ±ÛÇÊµå¸í
-	private String newDataType;			// [9](½Å)µ¥ÀÌÅÍ¼Ó¼º
-	private String newDataLength;		// [10](½Å)µ¥ÀÌÅÍ±æÀÌ
+	private String newTableId;			// (ì‹ )ì˜ë¬¸í…Œì´ë¸”ID-ëŒ€ë¬¸ì
+	private String newTableName;		// [6](ì‹ )í•œê¸€í…Œì´ë¸”ëª…
+	private String newColumnId;			// [7](ì‹ )ì˜ë¬¸í•„ë“œID-ëŒ€ë¬¸ì
+	private String newColumnName;		// [8](ì‹ )í•œê¸€í•„ë“œëª…
+	private String newDataType;			// [9](ì‹ )ë°ì´í„°ì†ì„±
+	private String newDataLength;		// [10](ì‹ )ë°ì´í„°ê¸¸ì´
 
-	private boolean isConvert = false;	// [11]ÀüÈ¯¿©ºÎ
-	private String convertRule = "";	// [12]º¯È¯ ±ÔÄ¢
+	private boolean isConvert = false;	// [11]ì „í™˜ì—¬ë¶€
+	private String convertRule = "";	// [12]ë³€í™˜ ê·œì¹™
 	
 	public String getOldTableId() {
 		return oldTableId;
