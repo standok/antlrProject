@@ -1,4 +1,4 @@
-package com.domain;
+package com.vo;
 
 public class DataMapDefinitionVo {
 

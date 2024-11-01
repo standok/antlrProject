@@ -161,41 +161,4 @@ public class ConverterUtil {
 		return String.valueOf(ch).getBytes(Charset.forName(charset)).length;
 	}
 
-//	public static String fillPadValue(String str, char padValue, boolean align, int length) {
-//
-//		if(str == null) {
-//			str = "";
-//		}
-//
-//		byte[] orgByte = str.getBytes();
-//		int orglength = orgByte.length;
-//
-//		if (orglength < length) {	// add Padding character
-//
-//			byte[] paddedBytes = new byte[length];
-//
-//			if (align) {	// right alignment
-//
-//				int padlength = length - orglength;
-//
-//				for (int i = 0; i < padlength; i++) {
-//					paddedBytes[i] = (byte) padValue;
-//				}
-//
-//				System.arraycopy(orgByte, 0, paddedBytes, padlength, orglength);
-//			} else {	// left alignment
-//				System.arraycopy(orgByte,  0, paddedBytes,  0, orglength);
-//				while (orglength < length) {
-//					paddedBytes[orglength++] = (byte) padValue;
-//				}
-//			}
-//
-//			return new String(paddedBytes);
-//		} else if (orglength > length) {	//주어진 길이보다 남는다면, 주어진 길이만큼만 자른다.
-//			byte[] paddedBytes = new byte[length];
-//			System.arraycopy(orgByte, 0, paddedBytes, 0, length);
-//			return new String(paddedBytes);
-//		}
-//		return new String(orgByte);
-//	}
 }

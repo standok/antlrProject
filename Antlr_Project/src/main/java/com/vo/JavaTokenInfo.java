@@ -1,13 +1,14 @@
-package com.domain;
+package com.vo;
 
-public class JavaSourceTokenInfo {
+public class JavaTokenInfo {
 
-	private String tokenName;		// Token Name   - import
-	private String symbolicId;		// Symbolic Id	- IMPORT
-	private int symbolNo;			// Symbolic No	- [25]
+	private String tokenName;		// 토큰
+	private String symbolicId;		// 심볼ID
+	private int symbolNo;			// 심볼번호
+
 	private String varType;			// 변수타입
 	private String varName;			// 변수명
-	
+
 	public String getTokenName() {
 		return tokenName;
 	}
@@ -38,5 +39,5 @@ public class JavaSourceTokenInfo {
 	public void setVarName(String varName) {
 		this.varName = varName;
 	}
-	
+
 }

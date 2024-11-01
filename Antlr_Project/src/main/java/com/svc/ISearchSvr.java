@@ -2,8 +2,8 @@ package com.svc;
 
 import java.util.List;
 
-import com.domain.TokenInfo;
+import com.vo.SqlTokenInfo;
 
 public interface ISearchSvr {
-	void searchTable(List<List<TokenInfo>> sqlList, List<TokenInfo> tokenList);
+	void searchTable(List<List<SqlTokenInfo>> sqlList, List<SqlTokenInfo> tokenList);
 }

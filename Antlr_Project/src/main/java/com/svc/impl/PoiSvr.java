@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -17,13 +16,20 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import com.domain.DataMapDefinitionVo;
 import com.svc.IPoiSvr;
 import com.util.Log;
 import com.util.PropertyManager;
+import com.vo.DataMapDefinitionVo;
 
 public class PoiSvr implements IPoiSvr {
 
+	/**
+	 * 설명 : Excel 파일내용을 읽고 Table정보를 Map으로 변경하여 리턴
+	 *
+	 * @param File file
+	 * @return HashMap<String, HashMap>
+	 * @throws IOException
+	 */
 	@Override
 	public HashMap readExcelToMap(File file) throws IOException {
 
@@ -35,7 +41,6 @@ public class PoiSvr implements IPoiSvr {
 
         try {
         	InputStream in = new FileInputStream(file);
-
 
             // 엑셀 97 - 2003 까지는 HSSF(xls),  엑셀 2007 이상은 XSSF(xlsx)
             if (file.getName().endsWith(".xls")) {
@@ -143,6 +148,13 @@ public class PoiSvr implements IPoiSvr {
         return rtnMap;
 	}
 
+	/**
+	 * 설명 : Excel 파일내용을 읽고 Table정보를 List으로 변경하여 리턴
+	 *
+	 * @param File file
+	 * @return List<DataMapDefinitionVo>
+	 * @throws IOException
+	 */
 	@Override
 	public List<DataMapDefinitionVo> readExcelToList(File file) throws IOException {
 
@@ -216,12 +228,13 @@ public class PoiSvr implements IPoiSvr {
         return rtnList;
 	}
 
-	@Override
-	public void writeExcel(Map<String, String> columnMap) {
-
-
-	}
-
+	/**
+	 * 설명 : Excel Cell 내용을 String으로 리턴
+	 *
+	 * @param Cell cell
+	 * @return String
+	 * @throws IOException
+	 */
 	public String getValue(Cell cell) {
 
         // 날짜포맷

@@ -5,13 +5,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.svc.ITokenInfoSvc;
-import com.svc.impl.TokenInfoSvc;
+import com.svc.IConvertSvc;
+import com.svc.impl.ConvertSvc;
 import com.util.Log;
+import com.util.PropertyManager;
 
 public class ConvertSourceMain {
 
-	static ITokenInfoSvc tokenInfoSvc = new TokenInfoSvc();
+	static IConvertSvc convertSvc = new ConvertSvc();
 
 	public static void main(String[] args) {
 
@@ -19,8 +20,8 @@ public class ConvertSourceMain {
 		//String tmp = DataManager.getNewColumnId("", "");
 
 		// 소스 폴더 setting
-		String DATA_DIRECTORY = System.getProperty("user.dir") + "/files/";
-		File dir = new File(DATA_DIRECTORY);
+		String filePath = System.getProperty("user.dir") + PropertyManager.getProperty("FILE_PATH");
+		File dir = new File(filePath);
 
 		List<File> javaFileList = new ArrayList<File>();
 		List<File> sqlFileList = new ArrayList<File>();
@@ -28,10 +29,10 @@ public class ConvertSourceMain {
 		String[] fileNames = dir.list();
 		for(String fileName : fileNames) {
 			if(fileName.toUpperCase().endsWith(".JAVA")) {
-				javaFileList.add(new File(DATA_DIRECTORY + fileName));
+				javaFileList.add(new File(filePath + fileName));
 			}
 			if(fileName.toUpperCase().endsWith(".SQL")) {
-				sqlFileList.add(new File(DATA_DIRECTORY + fileName));
+				sqlFileList.add(new File(filePath + fileName));
 			}
 		}
 
@@ -54,6 +55,13 @@ public class ConvertSourceMain {
 		}
 	}
 
+	/**
+	 * 설명 : Java File Convert
+	 *
+	 * @param File
+	 * @return
+	 * @throws
+	 */
 	public static void convertJavaSource(File file) {
 
 		Log.debug("ANTLR4 Java/SQL*Parser: Release 0.5 - Production on Wed Nov 10 2023");
@@ -63,7 +71,7 @@ public class ConvertSourceMain {
 		double beforeTime = System.currentTimeMillis();
 
 		try {
-			tokenInfoSvc.convertFileToString(file);
+			convertSvc.convertFileToString(file);
 		} catch (IOException e) {
 			Log.error(e);
 		} catch (Exception e) {
@@ -79,6 +87,13 @@ public class ConvertSourceMain {
 		Log.debug("=============================================");
 	}
 
+	/**
+	 * 설명 : SQL File Convert
+	 *
+	 * @param File
+	 * @return
+	 * @throws
+	 */
 	public static void convertSQLSource(File file) {
 
 		Log.debug("ANTLR4 Java/SQL*Parser: Release 0.5 - Production on Wed Nov 10 2023");
@@ -88,7 +103,7 @@ public class ConvertSourceMain {
 		double beforeTime = System.currentTimeMillis();
 
 		try {
-			tokenInfoSvc.convertFileToString(file);
+			convertSvc.convertFileToString(file);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {

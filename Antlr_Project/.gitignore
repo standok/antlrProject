@@ -1,7 +1,6 @@
 /build/
 /data/
 /files/
-/config/
 
 # Compiled class file
 *.class
@@ -34,4 +33,4 @@ replay_pid*
 
 # config file
 .config
-.properties
+#.properties

@@ -15,24 +15,29 @@ import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.Vocabulary;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import com.domain.JavaSourceTokenInfo;
-import com.domain.TokenInfo;
-import com.dto.TokenInfoCreateDto;
-import com.svc.IParsingSvr;
+import com.biz.TokenInfoBiz;
+import com.svc.IConvertSvc;
+import com.svc.IParsingJavaSvr;
+import com.svc.IParsingSqlSvr;
 import com.svc.ISearchSvr;
-import com.svc.ITokenInfoSvc;
 import com.util.Log;
 import com.util.LogManager;
+import com.vo.JavaTokenInfo;
+import com.vo.SqlTokenInfo;
 
 import util.antlr.Java8Lexer;
 import util.antlr.Java8Parser;
 import util.antlr.PlSqlLexer;
 import util.antlr.PlSqlParser;
 
-public class TokenInfoSvc implements ITokenInfoSvc {
+public class ConvertSvc implements IConvertSvc {
 
 	/**
 	 * 설명 : 파일내용을 String으로 변환
+	 *
+	 * @param File
+	 * @return
+	 * @throws Exception, IOException
 	 */
 	@Override
 	public void convertFileToString(File file) throws Exception, IOException {
@@ -56,37 +61,45 @@ public class TokenInfoSvc implements ITokenInfoSvc {
 	}
 
 	/**
-	 * 설명 : SQL 파싱
+	 * 설명 : String을 File로 변환
+	 *
+	 * @param String
+	 * @return
+	 * @throws Exception, IOException
+	 */
+	@Override
+	public void convertStringToFile(String str) throws Exception, IOException {
+
+	}
+
+	/**
+	 * 설명 : StringBuilder로 변환된 Java 소스 파싱
+	 *
+	 * @param StringBuilder
+	 * @return
+	 * @throws Exception, IOException
 	 */
 	private void parsingJava(StringBuilder sb) throws Exception, IOException {
 
-		IParsingSvr parsingSvc = new ParsingSvr();
-		ISearchSvr searchSvr = new SearchSvr();
+		IParsingJavaSvr parsingJavaSvc = new ParsingJavaSvr();
 
 		Java8Lexer lexer = new Java8Lexer(CharStreams.fromString(sb.toString()));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		Java8Parser parser = new Java8Parser(tokens);
+		CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
+		Java8Parser parser = new Java8Parser(commonTokenStream);
 		ParseTree tree = parser.compilationUnit();
 		//Log.debug("result:"+tree.toStringTree(parser));
 		//parser.setBuildParseTree(true);
 
-		Vocabulary vocabulary = parser.getVocabulary();
-		List<List<JavaSourceTokenInfo>> javaSrcList = addJavaList(lexer, parser, tokens, vocabulary);
-
-		List<Integer> reservedWordList = new ArrayList<Integer>();
-
-		reservedWordList.add(Java8Parser.PACKAGE);
+		List<List<JavaTokenInfo>> javaSrcList = getJavaConList(parser, commonTokenStream);
 
 		LogManager.getLogger("debug").debug("javaSrcList.size()======>"+javaSrcList.size());
 
 		for(int i=0; i<javaSrcList.size(); i++) {
-			List<JavaSourceTokenInfo> tokenList = javaSrcList.get(i);
-			Log.printInfomation(lexer, parser, vocabulary, tokenList);
-
-			// 변경할 라인 찾기
+			List<JavaTokenInfo> javaTokenList = javaSrcList.get(i);
+			Log.printInfomation(lexer, parser, javaTokenList);
 
 			// SQL문만 가져오기
-			List<JavaSourceTokenInfo> parsingSqlList = parsingSvc.parsingJavaToSQL(tokenList, parser, reservedWordList);
+			List<JavaTokenInfo> parsingSqlList = parsingJavaSvc.getSqlInJava(javaTokenList);
 
 			LogManager.getLogger("debug").debug(" << SQL 파싱 시작 ["+i+"]>>-------------------------");
 			//Log.logListToString(parser, parsingSqlList);
@@ -114,30 +127,35 @@ public class TokenInfoSvc implements ITokenInfoSvc {
 	}
 
 	/**
-	 * 설명 : 토큰 구분 결과를 List에 저장 후 반환 / 주석, 피룡없는 sql문 구별 기능 추가해야함.
+	 * 설명 : CommonTokenStream에서 Token을 분류
+	 *
+	 * @param Java8Parser parser, CommonTokenStream commonTokenStream
+	 * @return List<List<JavaTokenInfo>>
+	 * @throws
 	 */
-	private List<List<JavaSourceTokenInfo>> addJavaList(Java8Lexer lexer, Java8Parser parser, CommonTokenStream tokenStream, Vocabulary vocabulary) {
+	private List<List<JavaTokenInfo>> getJavaConList(Java8Parser parser, CommonTokenStream commonTokenStream) {
 
-		List<List<JavaSourceTokenInfo>> javaSrcList = new ArrayList<>();
-		List<JavaSourceTokenInfo> list = new ArrayList<>();
-		JavaSourceTokenInfo tokenInfo = new JavaSourceTokenInfo();
+		List<List<JavaTokenInfo>> javaSrcList = new ArrayList<>();
+		List<JavaTokenInfo> list = new ArrayList<>();
+		JavaTokenInfo tokenInfo = new JavaTokenInfo();
 
-		for(int i = 0; i<tokenStream.size(); i++) {
-			int symbolNo = tokenStream.get(i).getType();
-			String tokenName = tokenStream.get(i).getText();
+		Vocabulary vocabulary = parser.getVocabulary();
+
+		for(int i = 0; i<commonTokenStream.size(); i++) {
+			int symbolNo = commonTokenStream.get(i).getType();
+			String tokenName = commonTokenStream.get(i).getText();
 			String symbolicId = vocabulary.getSymbolicName(symbolNo);
 
 			// 제외요건
 			if(symbolNo == Java8Parser.PACKAGE) continue;
 			if(symbolNo == Java8Parser.IMPORT) continue;
 
-			tokenInfo = new JavaSourceTokenInfo();
+			tokenInfo = new JavaTokenInfo();
 			tokenInfo.setSymbolNo(symbolNo);
 			tokenInfo.setSymbolicId(symbolicId);
 			tokenInfo.setTokenName(tokenName);
 
 			list.add(tokenInfo);
-
 		}
 		javaSrcList.add(list);
 		return javaSrcList;
@@ -145,10 +163,14 @@ public class TokenInfoSvc implements ITokenInfoSvc {
 
 	/**
 	 * 설명 : SQL 파싱
+	 *
+	 * @param StringBuilder
+	 * @return
+	 * @throws Exception
 	 */
 	private void parsingSql(StringBuilder sb) throws Exception {
 
-		IParsingSvr parsingSvc = new ParsingSvr();
+		IParsingSqlSvr parsingSvc = new ParsingSqlSvr();
 		ISearchSvr searchSvr = new SearchSvr();
 
 		PlSqlLexer lexer = new PlSqlLexer(CharStreams.fromString(sb.toString()));
@@ -158,34 +180,41 @@ public class TokenInfoSvc implements ITokenInfoSvc {
 
 		parser.data_manipulation_language_statements();
 
-		Vocabulary vocabulary = parser.getVocabulary();
-		List<List<TokenInfo>> sqlList = addSqlList(lexer, parser, tokenStream, vocabulary);
-		List<Integer> reservedWordList = initReservedWordList(parser);
+		List<List<SqlTokenInfo>> sqlConList = getSqlConList(parser, tokenStream);
 
-		for(int i=0; i<sqlList.size(); i++) {
-			List<TokenInfo> tokenList = sqlList.get(i);
-			Log.printInfomation(lexer, parser, vocabulary, tokenList);
+		for(int i=0; i<sqlConList.size(); i++) {
+			List<SqlTokenInfo> tokenList = sqlConList.get(i);
+			Log.printInfomation(lexer, parser, tokenList);
 
-			// 실제 SQL을 파싱하는 로직
-			parsingSvc.parsingSql(tokenList, parser, reservedWordList);
-			List<TokenInfo> queryTokenList = parsingSvc.getQueryTokenList();
+			// SQL파싱 Svc 호출
+			parsingSvc.parsingSql(tokenList, parser);
 
-			LogManager.getLogger("debug").debug("["+i+"] Output Result-------------------------");
+			List<SqlTokenInfo> queryTokenList = parsingSvc.getQueryTokenList();
+
+			LogManager.getLogger("debug").debug("sqlConList ["+i+"] Output Result -------------------------");
 			Log.logListToString(parser, queryTokenList);
-			LogManager.getLogger("debug").debug("["+i+"] ---------------------------------------");
+			LogManager.getLogger("debug").debug("sqlConList ["+i+"] ---------------------------------------");
 
-			searchSvr.searchTable(sqlList, queryTokenList);
+			searchSvr.searchTable(sqlConList, queryTokenList);
 		}
+
+
 	}
 
 	/**
-	 * 설명 : 토큰 구분 결과를 List에 저장 후 반환 / 주석, 피룡없는 sql문 구별 기능 추가해야함.
+	 * 설명 : TokenStream에서 Token을 분류
+	 *
+	 * @param PlSqlParser parser, TokenStream tokenStream
+	 * @return List<List<TokenInfo>>
+	 * @throws
 	 */
-	private List<List<TokenInfo>> addSqlList(PlSqlLexer lexer, PlSqlParser parser, TokenStream tokenStream, Vocabulary vocabulary) {
-		TokenInfoCreateDto tokenInfoCreateDto = new TokenInfoCreateDto();
+	private List<List<SqlTokenInfo>> getSqlConList(PlSqlParser parser, TokenStream tokenStream) {
+		TokenInfoBiz tokenInfoBiz = new TokenInfoBiz();
 
-		List<List<TokenInfo>> sqlList = new ArrayList<>();
-		List<TokenInfo> list = new ArrayList<>();
+		List<List<SqlTokenInfo>> sqlConList = new ArrayList<>();
+		List<SqlTokenInfo> list = new ArrayList<>();
+
+		Vocabulary vocabulary = parser.getVocabulary();
 
 		for(int i = 0; i<tokenStream.size(); i++) {
 			int symbolNo = tokenStream.get(i).getType();
@@ -199,42 +228,14 @@ public class TokenInfoSvc implements ITokenInfoSvc {
 			if(symbolNo == PlSqlParser.MULTI_LINE_COMMENT) continue;
 			if(symbolNo == PlSqlParser.REMARK_COMMENT) continue;
 
-			list.add(tokenInfoCreateDto.toEntity(tokenName, symbolicId, symbolNo));
+			list.add(tokenInfoBiz.createTokenInfo(tokenName, symbolicId, symbolNo));
 
 			if(symbolNo == PlSqlParser.SEMICOLON) {
-				sqlList.add(list);
+				sqlConList.add(list);
 				list = new ArrayList<>();
 			}
 		}
 
-		return sqlList;
-	}
-
-	/**
-	 * 설명 : 파라미터가 예약어에 속한다면 true 반환, 아니면 false 반환
-	 */
-	@Override
-	public boolean checkReservedWord(int SymbolNo, List<Integer> reserveWordList) {
-		return reserveWordList.contains(SymbolNo);
-	}
-
-	/**
-	 * 설명 : 예약어에 속하는 단어 추가
-	 * TODO : PlSqlParser.g4 파일에서 예약어를 구분하는 문장이 있을것이다. 확인 해야함.
-	 */
-	private List<Integer> initReservedWordList(PlSqlParser parser) {
-		List<Integer> reservedWordList = new ArrayList<Integer>();
-
-		//reservedWordList.add(PlSqlParser.SELECT);
-		reservedWordList.add(PlSqlParser.UPDATE);
-		reservedWordList.add(PlSqlParser.DELETE);
-		reservedWordList.add(PlSqlParser.SET);
-		//reservedWordList.add(PlSqlParser.WITH);
-		reservedWordList.add(PlSqlParser.INTO);
-		//reservedWordList.add(PlSqlParser.FROM);
-		//reservedWordList.add(PlSqlParser.WHERE);
-		reservedWordList.add(PlSqlParser.SEMICOLON);
-
-		return reservedWordList;
+		return sqlConList;
 	}
 }

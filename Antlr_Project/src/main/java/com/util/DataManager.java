@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.domain.DataMapDefinitionVo;
 import com.svc.IPoiSvr;
 import com.svc.impl.PoiSvr;
+import com.vo.DataMapDefinitionVo;
 
 public class DataManager {
 	

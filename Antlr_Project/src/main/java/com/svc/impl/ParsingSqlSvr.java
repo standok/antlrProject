@@ -7,83 +7,32 @@ import java.util.Map;
 
 import org.apache.log4j.LogManager;
 
-import com.domain.JavaSourceTokenInfo;
-import com.domain.TokenInfo;
-import com.dto.TokenInfoCreateDto;
-import com.svc.IParsingSvr;
+import com.biz.TokenInfoBiz;
+import com.svc.IParsingSqlSvr;
+import com.vo.SqlTokenInfo;
 
-import util.antlr.Java8Parser;
 import util.antlr.PlSqlParser;
 
-public class ParsingSvr implements IParsingSvr {
+public class ParsingSqlSvr implements IParsingSqlSvr {
 
-	private List<TokenInfo> queryTokenList = null;
+	private List<SqlTokenInfo> queryTokenList = null;
 	private int tokenIdx;
 	private int depLv;	// 쿼리 깊이
 
 	@Override
-	public List<TokenInfo> getQueryTokenList() {
+	public List<SqlTokenInfo> getQueryTokenList() {
 		return queryTokenList;
 	}
 
 	/**
-	 * 설명 : java 소스에서 SQL문을 추출
+	 * 설명 : SQL을 파싱해서 queryTokenList를 만든다.
+	 *
+	 * @param List<SqlTokenInfo> tokenList, PlSqlParser parser
+	 * @return
+	 * @throws Exception
 	 */
 	@Override
-	public List<JavaSourceTokenInfo> parsingJavaToSQL(List<JavaSourceTokenInfo> tokenList, Java8Parser parser, List<Integer> reservedWordList) throws Exception {
-
-		LogManager.getLogger("debug").debug("ParsingSvr.parsingJavaToSQL Start~!!");
-
-		List<JavaSourceTokenInfo> javaTokenList = new ArrayList<>();
-		JavaSourceTokenInfo javaSourceTokenInfo = new JavaSourceTokenInfo();
-
-		int tokenIdx = 1;
-		int tokenSize = tokenList.size();
-		boolean state = false;
-
-		//SQL 정보 저장
-		for(; tokenIdx<tokenSize; tokenIdx++) {
-			String tokenName = tokenList.get(tokenIdx).getTokenName();
-			int symbolNo = tokenList.get(tokenIdx).getSymbolNo();
-
-			if (symbolNo == Java8Parser.Identifier) {
-				// TODO: QueryManager 를 사용하지 않는 부분도 확인이 필요하다.
-				if("QueryManager".equals(tokenName)
-						&&"new".equals(tokenList.get(tokenIdx-1).getTokenName())) {
-					javaSourceTokenInfo = new JavaSourceTokenInfo();
-					javaSourceTokenInfo.setTokenName(";");
-					javaSourceTokenInfo.setSymbolNo(Java8Parser.SEMI);
-					javaTokenList.add(javaSourceTokenInfo);
-					state = false;
-				}
-			} else if(symbolNo == Java8Parser.StringLiteral) {
-
-				tokenName = tokenName.replace("\"","");
-
-				if(tokenName.contains("SELECT")) state = true;
-				if(tokenName.contains("UPDATE")) state = true;
-				if(tokenName.contains("DELETE")) state = true;
-				if(tokenName.contains("WITH AS")) state = true;
-
-				//LogManager.getLogger("debug").debug("["+state+"]tokenName==>"+tokenName);
-
-				if(state) {
-					javaSourceTokenInfo = new JavaSourceTokenInfo();
-					javaSourceTokenInfo.setTokenName(tokenName);
-					javaSourceTokenInfo.setSymbolNo(symbolNo);
-					javaTokenList.add(javaSourceTokenInfo);
-				}
-			}
-		}
-
-		return javaTokenList;
-	}
-
-	/**
-	 * 설명 : SQL 파싱
-	 */
-	@Override
-	public void parsingSql(List<TokenInfo> tokenList, PlSqlParser parser, List<Integer> reservedWordList) throws Exception {
+	public void parsingSql(List<SqlTokenInfo> tokenList, PlSqlParser parser) throws Exception {
 
 		// 파싱 변수 초기화
 		queryTokenList = new ArrayList<>();
@@ -112,15 +61,19 @@ public class ParsingSvr implements IParsingSvr {
 	}
 
 	/**
-	 * 설명 : SELECT SQL 파싱 후 queryTokenList 생성
+	 * 설명 : Select Query 파싱
+	 *
+	 * @param List<SqlTokenInfo> tokenList, PlSqlParser parser
+	 * @return
+	 * @throws Exception
 	 */
-	private void parsingSelectSQL(List<TokenInfo> tokenList, PlSqlParser parser) throws Exception {
+	private void parsingSelectSQL(List<SqlTokenInfo> tokenList, PlSqlParser parser) throws Exception {
 
 		LogManager.getLogger("debug").debug("parsingSelectSQL Start ===============================");
 
 		tokenIdx++;
 
-		TokenInfoCreateDto tokenInfoCreateDto = new TokenInfoCreateDto();
+		TokenInfoBiz tokenInfoBiz = new TokenInfoBiz();
 
 		Map<String, String> selectMap = new LinkedHashMap<>();
 		Map<String, String> fromMap = new LinkedHashMap<>();
@@ -207,11 +160,11 @@ public class ParsingSvr implements IParsingSvr {
 					String columnMainName = columnName.substring((columnName.indexOf(".")+1));
 					String tableMainName = fromMap.get(tableAliasName);
 
-					queryTokenList.add(tokenInfoCreateDto.toEntity(columnMainName, key, tableMainName));
+					queryTokenList.add(tokenInfoBiz.createTokenInfo(columnMainName, key, tableMainName));
 				}
 			} else {
 				for(String tableKey : fromMap.keySet()) {
-					queryTokenList.add(tokenInfoCreateDto.toEntity(columnName, key, fromMap.get(tableKey)));
+					queryTokenList.add(tokenInfoBiz.createTokenInfo(columnName, key, fromMap.get(tableKey)));
 				}
 			}
 		}
@@ -219,9 +172,13 @@ public class ParsingSvr implements IParsingSvr {
 	}
 
 	/**
-	 * 설명 : 토큰 분석 후 from Map 생성
+	 * 설명 : From Query 파싱
+	 *
+	 * @param List<SqlTokenInfo> tokenList, PlSqlParser parser
+	 * @return Map<String, String>
+	 * @throws Exception
 	 */
-	private Map<String, String> parsingFromSQL(List<TokenInfo> tokenList, PlSqlParser parser) throws Exception {
+	private Map<String, String> parsingFromSQL(List<SqlTokenInfo> tokenList, PlSqlParser parser) throws Exception {
 
 		LogManager.getLogger("debug").debug("parsingFromSQL Start ===============================");
 
@@ -286,9 +243,13 @@ public class ParsingSvr implements IParsingSvr {
 	}
 
 	/**
-	 * 설명 : 토큰 분석 후 where Map 생성
+	 * 설명 : Where Query 파싱
+	 *
+	 * @param List<SqlTokenInfo> tokenList, PlSqlParser parser
+	 * @return Map<String, String>
+	 * @throws Exception
 	 */
-	public Map<String, String> parsingWhereSQL(List<TokenInfo> tokenList, PlSqlParser parser) throws Exception {
+	public Map<String, String> parsingWhereSQL(List<SqlTokenInfo> tokenList, PlSqlParser parser) throws Exception {
 
 		LogManager.getLogger("debug").debug("parsingWhereSQL Start ===============================");
 
