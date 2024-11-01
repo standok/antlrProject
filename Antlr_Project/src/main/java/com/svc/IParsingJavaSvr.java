@@ -9,7 +9,7 @@ public interface IParsingJavaSvr {
 	/**
 	 * 설명 : Java 소스에서 SQL문을 추출
 	 *
-	 * @param List<JavaTokenInfo> tokenList, Java8Parser parser
+	 * @param List<JavaTokenInfo> tokenList
 	 * @return List<JavaTokenInfo>
 	 * @throws Exception
 	 */

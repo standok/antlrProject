@@ -2,11 +2,12 @@ package com.vo;
 
 public class SqlTokenInfo {
 
-	private String tokenName;
-	private String symbolicId;
-	private int symbolNo;
-	private String aliasName;
-	private String tableName;
+	private String tokenName;		// 토큰명
+	private int tokenType;			// 토큰타입
+	private String symbolicName;	// 토큰타입명
+
+	private String aliasName;		// alias명
+	private String tableName;		// 테이블명
 
 	public String getTokenName() {
 		return tokenName;
@@ -14,17 +15,17 @@ public class SqlTokenInfo {
 	public void setTokenName(String tokenName) {
 		this.tokenName = tokenName;
 	}
-	public String getSymbolicId() {
-		return symbolicId;
+	public int getTokenType() {
+		return tokenType;
 	}
-	public void setSymbolicId(String symbolicId) {
-		this.symbolicId = symbolicId;
+	public void setTokenType(int tokenType) {
+		this.tokenType = tokenType;
 	}
-	public int getSymbolNo() {
-		return symbolNo;
+	public String getSymbolicName() {
+		return symbolicName;
 	}
-	public void setSymbolNo(int symbolNo) {
-		this.symbolNo = symbolNo;
+	public void setSymbolicName(String symbolicName) {
+		this.symbolicName = symbolicName;
 	}
 	public String getAliasName() {
 		return aliasName;

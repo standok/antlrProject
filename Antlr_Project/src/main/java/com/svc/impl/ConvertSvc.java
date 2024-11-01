@@ -107,9 +107,9 @@ public class ConvertSvc implements IConvertSvc {
 			StringBuilder sbSql = new StringBuilder();
 			for(int idx=0; idx<parsingSqlList.size(); idx++) {
 				String tokenName = parsingSqlList.get(idx).getTokenName();
-				int symbolNo = parsingSqlList.get(idx).getSymbolNo();
+				int tokenType = parsingSqlList.get(idx).getTokenType();
 
-				if(symbolNo == Java8Parser.SEMI) {
+				if(tokenType == Java8Parser.SEMI) {
 					sbSql.append(tokenName.replace("\\n", ""));
 					LogManager.getLogger("debug").debug("< Java소스에서 SQL 출력 ["+i+"] >");
 					LogManager.getLogger("debug").debug(sbSql.toString());
@@ -142,17 +142,17 @@ public class ConvertSvc implements IConvertSvc {
 		Vocabulary vocabulary = parser.getVocabulary();
 
 		for(int i = 0; i<commonTokenStream.size(); i++) {
-			int symbolNo = commonTokenStream.get(i).getType();
+			int tokenType = commonTokenStream.get(i).getType();
 			String tokenName = commonTokenStream.get(i).getText();
-			String symbolicId = vocabulary.getSymbolicName(symbolNo);
+			String symbolicName = vocabulary.getSymbolicName(tokenType);
 
 			// 제외요건
-			if(symbolNo == Java8Parser.PACKAGE) continue;
-			if(symbolNo == Java8Parser.IMPORT) continue;
+			if(tokenType == Java8Parser.PACKAGE) continue;
+			if(tokenType == Java8Parser.IMPORT) continue;
 
 			tokenInfo = new JavaTokenInfo();
-			tokenInfo.setSymbolNo(symbolNo);
-			tokenInfo.setSymbolicId(symbolicId);
+			tokenInfo.setTokenType(tokenType);
+			tokenInfo.setSymbolicName(symbolicName);
 			tokenInfo.setTokenName(tokenName);
 
 			list.add(tokenInfo);
@@ -192,7 +192,7 @@ public class ConvertSvc implements IConvertSvc {
 			List<SqlTokenInfo> queryTokenList = parsingSvc.getQueryTokenList();
 
 			LogManager.getLogger("debug").debug("sqlConList ["+i+"] Output Result -------------------------");
-			Log.logListToString(parser, queryTokenList);
+			Log.logListToString(queryTokenList);
 			LogManager.getLogger("debug").debug("sqlConList ["+i+"] ---------------------------------------");
 
 			searchSvr.searchTable(sqlConList, queryTokenList);
@@ -217,20 +217,20 @@ public class ConvertSvc implements IConvertSvc {
 		Vocabulary vocabulary = parser.getVocabulary();
 
 		for(int i = 0; i<tokenStream.size(); i++) {
-			int symbolNo = tokenStream.get(i).getType();
+			int tokenType = tokenStream.get(i).getType();
 			String tokenName = tokenStream.get(i).getText();
-			String symbolicId = vocabulary.getSymbolicName(symbolNo);
+			String symbolicName = vocabulary.getSymbolicName(tokenType);
 
 			//Log.debug("tokenName=>"+tokenName);
 
-			if(symbolNo == PlSqlParser.COMMENT) continue;
-			if(symbolNo == PlSqlParser.SINGLE_LINE_COMMENT) continue;
-			if(symbolNo == PlSqlParser.MULTI_LINE_COMMENT) continue;
-			if(symbolNo == PlSqlParser.REMARK_COMMENT) continue;
+			if(tokenType == PlSqlParser.COMMENT) continue;
+			if(tokenType == PlSqlParser.SINGLE_LINE_COMMENT) continue;
+			if(tokenType == PlSqlParser.MULTI_LINE_COMMENT) continue;
+			if(tokenType == PlSqlParser.REMARK_COMMENT) continue;
 
-			list.add(tokenInfoBiz.createTokenInfo(tokenName, symbolicId, symbolNo));
+			list.add(tokenInfoBiz.createTokenInfo(tokenName, tokenType, symbolicName));
 
-			if(symbolNo == PlSqlParser.SEMICOLON) {
+			if(tokenType == PlSqlParser.SEMICOLON) {
 				sqlConList.add(list);
 				list = new ArrayList<>();
 			}

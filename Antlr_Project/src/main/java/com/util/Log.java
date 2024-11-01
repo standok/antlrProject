@@ -43,33 +43,31 @@ public class Log extends LogManager {
 
 		Log.debug("=======================================================");
 		for(int i=0; i<tokenList.size(); i++) {
-			int symbolNo = tokenList.get(i).getSymbolNo();
 			String tokenName = tokenList.get(i).getTokenName();
-			String symbolicId = vocabulary.getSymbolicName(symbolNo);
+			int tokenType = tokenList.get(i).getTokenType();
+			String symbolicName = vocabulary.getSymbolicName(tokenType);
 
 			String lastStr = "";
-			if(symbolNo == PlSqlParser.REGULAR_ID) lastStr = "*";
+			if(tokenType == PlSqlParser.REGULAR_ID) lastStr = "*";
 			Log.debug(ConverterUtil.padString(Integer.toString(i+1), 4, " ", true)
 					 +":"+ConverterUtil.rightBytesPad(tokenName, 24)
-					 +" ≒ "+symbolicId+"["+symbolNo+"]"+lastStr);
+					 +" ≒ "+symbolicName+"["+tokenType+"]"+lastStr);
 		}
 		Log.debug("=======================================================");
 	}
 
-	public static void logListToString(PlSqlParser parser, List<SqlTokenInfo> tokenList) {
-		Vocabulary vocabulary = parser.getVocabulary();
-
+	public static void logListToString(List<SqlTokenInfo> tokenList) {
 		Log.debug("=======================================================");
 		for(int i=0; i<tokenList.size(); i++) {
-			int symbolNo = tokenList.get(i).getSymbolNo();
 			String tokenName = tokenList.get(i).getTokenName();
-			String symbolicId = vocabulary.getSymbolicName(symbolNo);
+			int tokenType = tokenList.get(i).getTokenType();
+			String symbolicName = tokenList.get(i).getSymbolicName();
 
 			String lastStr = "";
-			if(symbolNo == PlSqlParser.REGULAR_ID) lastStr = "*";
+			if(tokenType == PlSqlParser.REGULAR_ID) lastStr = "*";
 			Log.debug(ConverterUtil.padString(Integer.toString(i+1), 4, " ", true)
 					 +":"+ConverterUtil.rightBytesPad(tokenName, 24)
-					 +" ≒ "+symbolicId+"["+symbolNo+"]"+lastStr);
+					 +" ≒ "+symbolicName+"["+tokenType+"]"+lastStr);
 		}
 		Log.debug("=======================================================");
 	}
@@ -90,21 +88,21 @@ public class Log extends LogManager {
 		Log.debug("");
 
 		Log.debug("--------------------------------------------------------------");
-		Log.debug("   #: Token/Syntax             ≒ Symbolic Id[SymbolNo]");
+		Log.debug("   #: Token/Syntax             ≒ Symbolic Id[TokenType]");
 		Log.debug("--------------------------------------------------------------");
 
 		Vocabulary vocabulary = parser.getVocabulary();
 
 		for(int i=0; i<tokenList.size(); i++) {
-			int symbolNo = tokenList.get(i).getSymbolNo();
 			String tokenName = tokenList.get(i).getTokenName();
-			String symbolicId = vocabulary.getSymbolicName(symbolNo);
+			int tokenType = tokenList.get(i).getTokenType();
+			String symbolicName = vocabulary.getSymbolicName(tokenType);
 
 			String lastStr = "";
-			if(symbolNo == Java8Parser.Identifier) lastStr = "*";
+			if(tokenType == Java8Parser.Identifier) lastStr = "*";
 			Log.debug(ConverterUtil.padString(Integer.toString(i+1), 4, " ", true)
 					 +":"+ConverterUtil.rightBytesPad(tokenName, 24)
-					 +" ≒ "+symbolicId+"["+symbolNo+"]"+lastStr);
+					 +" ≒ "+symbolicName+"["+tokenType+"]"+lastStr);
 		}
 
 		Log.debug("=======================================================");
@@ -115,21 +113,21 @@ public class Log extends LogManager {
 		Log.debug("[Antlr] Token/Syntax Count : ["+tokenList.size()+"]");
 		Log.debug("");
 
-		Log.debug("   #: Token/Syntax             ≒ Symbolic Id[SymbolNo]");
+		Log.debug("   #: Token/Syntax             ≒ Symbolic Id[TokenType]");
 		Log.debug("--------------------------------------------------------------");
 
 		Vocabulary vocabulary = parser.getVocabulary();
 
 		for(int i=0; i<tokenList.size(); i++) {
-			int symbolNo = tokenList.get(i).getSymbolNo();
 			String tokenName = tokenList.get(i).getTokenName();
-			String symbolicId = vocabulary.getSymbolicName(symbolNo);
+			int tokenType = tokenList.get(i).getTokenType();
+			String symbolicName = vocabulary.getSymbolicName(tokenType);
 
 			String lastStr = "";
-			if(symbolNo == PlSqlParser.REGULAR_ID) lastStr = "*";
+			if(tokenType == PlSqlParser.REGULAR_ID) lastStr = "*";
 			Log.debug(ConverterUtil.padString(Integer.toString(i+1), 4, " ", true)
 					 +":"+ConverterUtil.rightBytesPad(tokenName, 24)
-					 +" ≒ "+symbolicId+"["+symbolNo+"]"+lastStr);
+					 +" ≒ "+symbolicName+"["+tokenType+"]"+lastStr);
 		}
 
 		Log.debug("=======================================================");

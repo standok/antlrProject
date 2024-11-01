@@ -2,9 +2,9 @@ package com.vo;
 
 public class JavaTokenInfo {
 
-	private String tokenName;		// 토큰
-	private String symbolicId;		// 심볼ID
-	private int symbolNo;			// 심볼번호
+	private String tokenName;		// 토큰명
+	private int tokenType;			// 토큰타입
+	private String symbolicName;	// 토큰타입명
 
 	private String varType;			// 변수타입
 	private String varName;			// 변수명
@@ -15,17 +15,17 @@ public class JavaTokenInfo {
 	public void setTokenName(String tokenName) {
 		this.tokenName = tokenName;
 	}
-	public String getSymbolicId() {
-		return symbolicId;
+	public int getTokenType() {
+		return tokenType;
 	}
-	public void setSymbolicId(String symbolicId) {
-		this.symbolicId = symbolicId;
+	public void setTokenType(int tokenType) {
+		this.tokenType = tokenType;
 	}
-	public int getSymbolNo() {
-		return symbolNo;
+	public String getSymbolicName() {
+		return symbolicName;
 	}
-	public void setSymbolNo(int symbolNo) {
-		this.symbolNo = symbolNo;
+	public void setSymbolicName(String symbolicName) {
+		this.symbolicName = symbolicName;
 	}
 	public String getVarType() {
 		return varType;
