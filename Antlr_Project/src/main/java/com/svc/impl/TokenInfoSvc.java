@@ -160,9 +160,6 @@ public class TokenInfoSvc implements ITokenInfoSvc {
 
 		Vocabulary vocabulary = parser.getVocabulary();
 		List<List<TokenInfo>> sqlList = addSqlList(lexer, parser, tokenStream, vocabulary);
-
-		//		Log.debug("sqlList.size()===>"+sqlList.size());
-
 		List<Integer> reservedWordList = initReservedWordList(parser);
 
 		for(int i=0; i<sqlList.size(); i++) {

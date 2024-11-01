@@ -23,7 +23,9 @@ public class TestDAO extends CommonDAO {
 		
 		StringBuffer sql = new StringBuffer();
 		sql.append("/* "+sThisMethod +"*/                \n");
-		sql.append("SELECT (SELECT PRIF.ACNM FROM TB_IIS_PRIF_I_A  PRIF WHERE ACIF.ACNM = PRIF.ACNM) ACNM  \n");
+		sql.append("SELECT (SELECT PRIF.ACNM FROM TB_IIS_PRIF_I_A  PRIF WHERE ACIF.ACNM = PRIF.ACNM) V_AA  \n");
+		sql.append("     , BBBBBBB V_BB          -- 계좌번호    \n");
+		sql.append("     , CCCCCCC V_CC         -- 계좌번호    \n");
 		sql.append("  FROM TB_IIS_ACIF_I_A ACIF	-- 계좌정보    \n");
 		sql.append(" WHERE ACNM = ?         -- 계좌번호    \n");
 		
