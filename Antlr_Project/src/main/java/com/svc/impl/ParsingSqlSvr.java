@@ -84,6 +84,7 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 		for(; tokenIdx < tokenList.size(); tokenIdx++) {
 			String tokenName = tokenList.get(tokenIdx).getTokenName();
 			int tokenType = tokenList.get(tokenIdx).getTokenType();
+
 			String logStr = "Token 데이터 분류 정보["+depLv+"]["+tokenIdx+"]["+tokenName+"]["+tokenType+"]";
 
 			// query depth level
@@ -152,21 +153,21 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 //		Log.logMapToString(whereMap);
 
 		// 리턴값 세팅
-		for(String key : selectMap.keySet()) {
-			String columnName = selectMap.get(key);
+		for(String aliasName : selectMap.keySet()) {
+			String tokenName = selectMap.get(aliasName);
 
-			if(columnName.contains(".")) {
-				String tableAliasName = columnName.substring(0, columnName.indexOf("."));
+			if(tokenName.contains(".")) {
+				String tableAliasName = tokenName.substring(0, tokenName.indexOf("."));
 
 				if(fromMap.containsKey(tableAliasName)) {
-					String columnMainName = columnName.substring((columnName.indexOf(".")+1));
+					String columnMainName = tokenName.substring((tokenName.indexOf(".")+1));
 					String tableMainName = fromMap.get(tableAliasName);
 
-					queryTokenList.add(tokenInfoBiz.createTokenInfo(columnMainName, key, tableMainName));
+					queryTokenList.add(tokenInfoBiz.createSqlTokenInfo(columnMainName, aliasName, tableMainName));
 				}
 			} else {
 				for(String tableKey : fromMap.keySet()) {
-					queryTokenList.add(tokenInfoBiz.createTokenInfo(columnName, key, fromMap.get(tableKey)));
+					queryTokenList.add(tokenInfoBiz.createSqlTokenInfo(tokenName, aliasName, fromMap.get(tableKey)));
 				}
 			}
 		}

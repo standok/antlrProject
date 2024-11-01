@@ -29,11 +29,11 @@ public class TokenInfoBiz {
 		return sqlTokenInfo;
 	}
 
-	public SqlTokenInfo createTokenInfo(String tokenName, String aliasName, String tableName) {
+	public SqlTokenInfo createSqlTokenInfo(String tokenName, String aliasName, String tableName) {
 		return this.createSqlTokenInfo(tokenName, 0, "", aliasName, tableName);
 	}
 
-	public SqlTokenInfo createTokenInfo(String tokenName, int tokenType, String symbolicName) {
+	public SqlTokenInfo createSqlTokenInfo(String tokenName, int tokenType, String symbolicName) {
 		return this.createSqlTokenInfo(tokenName, tokenType, symbolicName, "", "");
 	}
 }

@@ -146,10 +146,6 @@ public class ConvertSvc implements IConvertSvc {
 			String tokenName = commonTokenStream.get(i).getText();
 			String symbolicName = vocabulary.getSymbolicName(tokenType);
 
-			// 제외요건
-			if(tokenType == Java8Parser.PACKAGE) continue;
-			if(tokenType == Java8Parser.IMPORT) continue;
-
 			tokenInfo = new JavaTokenInfo();
 			tokenInfo.setTokenType(tokenType);
 			tokenInfo.setSymbolicName(symbolicName);
@@ -189,6 +185,7 @@ public class ConvertSvc implements IConvertSvc {
 			// SQL파싱 Svc 호출
 			parsingSvc.parsingSql(tokenList, parser);
 
+			// SQL에서 변경할 queryToken 리스트를 가져온다
 			List<SqlTokenInfo> queryTokenList = parsingSvc.getQueryTokenList();
 
 			LogManager.getLogger("debug").debug("sqlConList ["+i+"] Output Result -------------------------");
@@ -221,14 +218,13 @@ public class ConvertSvc implements IConvertSvc {
 			String tokenName = tokenStream.get(i).getText();
 			String symbolicName = vocabulary.getSymbolicName(tokenType);
 
-			//Log.debug("tokenName=>"+tokenName);
-
+			// TODO: 주석 제거 -> 차후 이부분을 주석하고 처리해야 깔끔할듯
 			if(tokenType == PlSqlParser.COMMENT) continue;
 			if(tokenType == PlSqlParser.SINGLE_LINE_COMMENT) continue;
 			if(tokenType == PlSqlParser.MULTI_LINE_COMMENT) continue;
 			if(tokenType == PlSqlParser.REMARK_COMMENT) continue;
 
-			list.add(tokenInfoBiz.createTokenInfo(tokenName, tokenType, symbolicName));
+			list.add(tokenInfoBiz.createSqlTokenInfo(tokenName, tokenType, symbolicName));
 
 			if(tokenType == PlSqlParser.SEMICOLON) {
 				sqlConList.add(list);
