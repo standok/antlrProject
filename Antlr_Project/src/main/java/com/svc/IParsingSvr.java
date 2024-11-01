@@ -9,6 +9,7 @@ import util.antlr.Java8Parser;
 import util.antlr.PlSqlParser;
 
 public interface IParsingSvr {
-	List<JavaSourceTokenInfo> parsingJavaToSQL(List<JavaSourceTokenInfo> tokenList, Java8Parser parser, List<Integer> reservedWordList);
-	List<TokenInfo> parsingSql(List<TokenInfo> tokenList, PlSqlParser parser, List<Integer> reservedWordList);
+	List<JavaSourceTokenInfo> parsingJavaToSQL(List<JavaSourceTokenInfo> tokenList, Java8Parser parser, List<Integer> reservedWordList) throws Exception;
+	void parsingSql(List<TokenInfo> tokenList, PlSqlParser parser, List<Integer> reservedWordList) throws Exception;
+	List<TokenInfo> getQueryTokenList();
 }

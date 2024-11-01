@@ -2504,10 +2504,13 @@ REMARK_COMMENT:
 // https://docs.oracle.com/cd/E11882_01/server.112/e16604/ch_twelve032.htm#SQPUG052
 PROMPT_MESSAGE: 'PRO' {this.IsNewlineAtPos(-4)}? 'MPT'? (' ' ~('\r' | '\n')*)? NEWLINE_EOF;
 
+// 2024.10.28 SEO 수정
 // TODO: should starts with newline
 START_CMD: // https://docs.oracle.com/cd/B19306_01/server.102/b14357/ch12002.htm
-    '@' '@'?
+//    '@' '@'?
+      '@' {IsNewlineAtPos(-2)}? '@'? ~('\r' | '\n')* NEWLINE_EOF
 ; // https://docs.oracle.com/cd/B19306_01/server.102/b14357/ch12003.htm
+
 
 REGULAR_ID: SIMPLE_LETTER (SIMPLE_LETTER | '$' | '_' | '#' | [0-9])*;
 

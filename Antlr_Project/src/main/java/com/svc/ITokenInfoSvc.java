@@ -5,6 +5,6 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ITokenInfoSvc {
-	void parsing(File file) throws IOException;
+	void convertFileToString(File file) throws Exception, IOException;
 	boolean checkReservedWord(int SymbolNo, List<Integer> reserveWordList);
 }

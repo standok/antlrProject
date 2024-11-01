@@ -20,6 +20,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.domain.DataMapDefinitionVo;
 import com.svc.IPoiSvr;
 import com.util.Log;
+import com.util.PropertyManager;
 
 public class PoiSvr implements IPoiSvr {
 
@@ -29,112 +30,141 @@ public class PoiSvr implements IPoiSvr {
 		HashMap rtnMap = new HashMap<String, HashMap>();
 		HashMap dataMap = new HashMap<String, DataMapDefinitionVo>();
 		DataMapDefinitionVo dataVo = new DataMapDefinitionVo();
-		
+
         Workbook workbook = null;
 
         try {
         	InputStream in = new FileInputStream(file);
-        	
-        			
+
+
             // 엑셀 97 - 2003 까지는 HSSF(xls),  엑셀 2007 이상은 XSSF(xlsx)
             if (file.getName().endsWith(".xls")) {
             	workbook = new HSSFWorkbook(in);
             } else {
                 workbook = new XSSFWorkbook(in);
             }
-        	
+
+			/*********************
+			 * 엑셀변수 초기값 세팅하기
+			 *********************/
             // 엑셀파일에서 첫번째 시트 불러오기
             Sheet worksheet = workbook.getSheet("테이블정의서");
-            
+            int startLine = Integer.getInteger(PropertyManager.getProperty("EXCEL_START_LINE"));	// 엑셀시작라인
+            int endLine = Integer.getInteger(PropertyManager.getProperty("EXCEL_END_LINE"));		// 엑셀마지막라인
+            /*********************/
+
             String currentTableId = "";
-            
+            String currentTableName = "";
+
             // getPhysicalNumberOfRow 는 행의 갯수를 불러오는 매소드
-            for (int i = 6; i < worksheet.getPhysicalNumberOfRows(); i++) {
+            for (int i = startLine; i < endLine; i++) {
 
             	// i번째 행 정보 가져오기
                 Row row = worksheet.getRow(i);
 
                 if (row != null) {
-                	
-                	// 비고가 '유지'가 아닌경우 skip
-//                	String etc = getValue(row.getCell(16));	// 비고                	
+
+                	// TODO: 비고가 '유지'가 아닌경우 skip
+//                	String etc = getValue(row.getCell(15));	// 비고
 //                	if(null == etc || !"유지".equals(etc)) continue;
 
-                	String oldTableId = getValue(row.getCell(6));
-                	String oldColumnId = getValue(row.getCell(9));
-                	
+                	String oldTableId = getValue(row.getCell(5));
+                	String oldTableName = getValue(row.getCell(6));
+                	String oldColumnId = getValue(row.getCell(8));
+
                 	// currentTableId 초기화
-                	if("".equals(currentTableId)) currentTableId = oldTableId;
-                	
+                	if("".equals(currentTableId)) {
+                		currentTableId = oldTableId;
+                		currentTableName = oldTableName;
+                	}
+
                 	// 같은 테이블끼리 rtnMap에 저장
                 	// 새로운 테이블이 들어왔을경우 dataMap 초기화
-                	if(!currentTableId.equals(oldTableId)) {
-                		if(rtnMap.containsKey(currentTableId)) throw new Exception("같은테이블존재 확인필");
+                	if(!"".equals(oldTableId) && !currentTableId.equals(oldTableId)) {
+//                		Log.debug("테이블삽입 new["+currentTableId+"],old["+oldTableId+"]");
+                		if(rtnMap.containsKey(currentTableId)) {
+                			// 중복테이블 임시 Skip
+                			if(!(currentTableId.contains("TB_REINV_ERR_BK"))) {
+                				throw new Exception("같은테이블존재 확인필 new["+currentTableId+"],old["+oldTableId+"]");
+                			}
+//                			continue;
+                		}
                 		rtnMap.put(currentTableId, dataMap);
+
+                		currentTableId = oldTableId;
+                		currentTableName = oldTableName;
+
                 		dataMap = new HashMap<String, DataMapDefinitionVo>();
                 	}
-                	
+
                 	// 엑셀 데이터 입력
                 	dataVo = new DataMapDefinitionVo();
-                	dataVo.setOldTableId(oldTableId);						// (구)영문테이블ID-대문자
-                	dataVo.setOldTableName(getValue(row.getCell(7)));		// [1](구)한글테이블명
+                	dataVo.setOldTableId(currentTableId);					// (구)영문테이블ID-대문자
+                	dataVo.setOldTableName(currentTableName);				// [1](구)한글테이블명
                 	dataVo.setOldColumnId(oldColumnId);						// [2](구)영문필드ID-대문자
-                	dataVo.setOldColumnName(getValue(row.getCell(10)));		// [3](구)한글필드명
-                	dataVo.setOldDataType(getValue(row.getCell(11)));		// [4](구)데이터속성
-                	dataVo.setOldDataLength(getValue(row.getCell(12)));		// [5](구)데이터길이
+                	dataVo.setOldColumnName(getValue(row.getCell(9)));		// [3](구)한글필드명
+                	dataVo.setOldDataType(getValue(row.getCell(10)));		// [4](구)데이터속성
+                	dataVo.setOldDataLength(getValue(row.getCell(11)));		// [5](구)데이터길이
 
-                	dataVo.setNewTableId(getValue(row.getCell(18)));		// (신)영문테이블ID-대문자
-                	dataVo.setNewTableName(getValue(row.getCell(19)));		// [6](신)한글테이블명
-                	dataVo.setNewColumnId(getValue(row.getCell(21)));		// [7](신)영문필드ID-대문자
-                	dataVo.setNewColumnName(getValue(row.getCell(22)));		// [8](신)한글필드명
-                	dataVo.setNewDataType(getValue(row.getCell(23)));		// [9](신)데이터속성
-                	dataVo.setNewDataLength(getValue(row.getCell(24)));		// [10](신)데이터길이
-                	
-                	String 적용상태 = getValue(row.getCell(28));			// 적용상태(준용, 신청중)
+                	// TODO: 테스트용
+//                	dataVo.setNewTableId(getValue(row.getCell(17)));		// (신)영문테이블ID-대문자
+//                	dataVo.setNewTableName(getValue(row.getCell(18)));		// [6](신)한글테이블명
+//                	dataVo.setNewColumnId(getValue(row.getCell(20)));		// [7](신)영문필드ID-대문자
+//                	dataVo.setNewColumnName(getValue(row.getCell(21)));		// [8](신)한글필드명
+//                	dataVo.setNewDataType(getValue(row.getCell(22)));		// [9](신)데이터속성
+//                	dataVo.setNewDataLength(getValue(row.getCell(23)));		// [10](신)데이터길이
+                	dataVo.setNewTableId(dataVo.getOldTableId()+"_NEW");	// (신)영문테이블ID-대문자
+                	dataVo.setNewTableName(dataVo.getOldTableName());		// [6](신)한글테이블명
+                	dataVo.setNewColumnId(dataVo.getOldColumnId()+"_NEW");	// [7](신)영문필드ID-대문자
+                	dataVo.setNewColumnName(dataVo.getOldColumnName());		// [8](신)한글필드명
+                	dataVo.setNewDataType(dataVo.getOldDataType());			// [9](신)데이터속성
+                	dataVo.setNewDataLength(dataVo.getOldDataLength());		// [10](신)데이터길이
+
+                	String 적용상태 = getValue(row.getCell(27));			// 적용상태(준용, 신청중)
 
                 	dataVo.setConvert(false);								// [11]전환여부
                 	if(!"준용".equals(적용상태) && !"".equals(적용상태.trim())) dataVo.setConvert(true);
-                	
+
                 	dataVo.setConvertRule("");							// [12]변환 규칙
-                	
+
                 	dataMap.put(oldColumnId, dataVo);
-                }                
+                }
             }
-            
+
             // 마지막 테이블 저장
             rtnMap.put(currentTableId, dataMap);
 
             workbook.close();
-        	
+
         } catch (Exception e) {
         	Log.error(e);
         }
-        
-        return rtnMap;	
+
+        return rtnMap;
 	}
-	
+
 	@Override
 	public List<DataMapDefinitionVo> readExcelToList(File file) throws IOException {
-		
+
 		List<DataMapDefinitionVo> rtnList = new ArrayList<DataMapDefinitionVo>();
 		DataMapDefinitionVo temp = new DataMapDefinitionVo();
 
 		InputStream in = new FileInputStream(file);
-		
+
         Workbook workbook = null;
 
         try {
-        			
+
             // 엑셀 97 - 2003 까지는 HSSF(xls),  엑셀 2007 이상은 XSSF(xlsx)
             if (file.getName().endsWith(".xls")) {
             	workbook = new HSSFWorkbook(in);
             } else {
                 workbook = new XSSFWorkbook(in);
             }
-        	
+
             // 엑셀파일에서 첫번째 시트 불러오기
             Sheet worksheet = workbook.getSheet("테이블정의서");
-            
+
             // getPhysicalNumberOfRow 는 행의 갯수를 불러오는 매소드
             for (int i = 6; i < worksheet.getPhysicalNumberOfRows(); i++) {
 
@@ -142,11 +172,11 @@ public class PoiSvr implements IPoiSvr {
                 Row row = worksheet.getRow(i);
 
                 if (row != null) {
-                	
-                	String etc = getValue(row.getCell(16));	// 비고
-                	
+
+                	String etc = getValue(row.getCell(15));	// 비고
+
                 	if(null == etc || !"유지".equals(etc)) continue;
-                	
+
                 	/**
                 	 *  엑셀 데이터 입력
                 	 */
@@ -164,42 +194,42 @@ public class PoiSvr implements IPoiSvr {
                 	temp.setNewColumnName(getValue(row.getCell(22)));	// [8](신)한글필드명
                 	temp.setNewDataType(getValue(row.getCell(23)));		// [9](신)데이터속성
                 	temp.setNewDataLength(getValue(row.getCell(24)));	// [10](신)데이터길이
-                	
+
                 	String 적용상태 = getValue(row.getCell(28));			// 적용상태(준용, 신청중)
 
                 	temp.setConvert(false);								// [11]전환여부
                 	if(!"준용".equals(적용상태) && !"".equals(적용상태.trim())) temp.setConvert(true);
-                	
+
                 	temp.setConvertRule("");							// [12]변환 규칙
-                	
+
                 	rtnList.add(temp);
                 }
-                
+
             }
-            
+
             workbook.close();
-        	
+
         } catch (Exception e) {
         	Log.error(e);
         }
-        
+
         return rtnList;
 	}
-	
+
 	@Override
 	public void writeExcel(Map<String, String> columnMap) {
-		
-		
+
+
 	}
-	
+
 	public String getValue(Cell cell) {
 
         // 날짜포맷
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		
+
         // return 변수
         String value = "";
-		
+
 		if (cell == null) {
             return null;
         } else {
@@ -233,12 +263,12 @@ public class PoiSvr implements IPoiSvr {
                default:
                   value = cell.getStringCellValue();
                   break;
-            }                                  
+            }
         }
-		
+
 		// 공백제거
 		value = value.replaceAll(" ", "");
-		
+
 		return value;
 	}
 

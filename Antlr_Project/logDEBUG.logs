@@ -1,0 +1,252 @@
+[2024-10-31 13:48:00] [Log.debug():22] DEBUG debug - ============================================================
+[2024-10-31 13:48:00] [Log.debug():22] DEBUG debug - convert Java File 전체건수 = [1]
+[2024-10-31 13:48:00] [Log.debug():22] DEBUG debug - convert Sql File 전체건수 = [1]
+[2024-10-31 13:48:00] [Log.debug():22] DEBUG debug - ============================================================
+[2024-10-31 13:48:00] [Log.debug():22] DEBUG debug - ANTLR4 Java/SQL*Parser: Release 0.5 - Production on Wed Nov 10 2023
+[2024-10-31 13:48:00] [Log.debug():22] DEBUG debug - Copyright (c) 2020-2023, IBK System co., Ltd. All Rights Reserved.
+[2024-10-31 13:48:00] [Log.debug():22] DEBUG debug - [Antlr] Java File Name : [TestDAO.java]
+
+[2024-10-31 13:48:02] [Log.debug():22] DEBUG debug - javaSrcList.size()======>1
+[2024-10-31 13:48:02] [Log.debug():22] DEBUG debug - [Antlr] Parser/Lexer Grammar : [Java8Parser.g4, Java8Lexer.g4]
+[2024-10-31 13:48:02] [Log.debug():22] DEBUG debug - [Antlr] Token/Syntax Count : [481]
+[2024-10-31 13:48:02] [Log.debug():22] DEBUG debug - 
+[2024-10-31 13:48:02] [Log.debug():22] DEBUG debug - --------------------------------------------------------------
+[2024-10-31 13:48:02] [Log.debug():22] DEBUG debug -    #: Token/Syntax             ≒ Symbolic Id[SymbolNo]
+[2024-10-31 13:48:02] [Log.debug():22] DEBUG debug - --------------------------------------------------------------
+[2024-10-31 13:48:02] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:02] [Log.debug():22] DEBUG debug -  << SQL 파싱 시작 [0]>>-------------------------
+[2024-10-31 13:48:02] [Log.debug():22] DEBUG debug - < Java소스에서 SQL 출력 [0] >
+[2024-10-31 13:48:02] [Log.debug():22] DEBUG debug - SELECT EABN_YON			-- e번호    
+  FROM TB_IIS_ACIF_I_A	-- 계좌정보    
+ WHERE ACNM = ?         -- 계좌번호    
+;
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - [Antlr] Parser/Lexer Grammar : [PlSqlParser.g4, PlSqlLexer.g4]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - [Antlr] Token/Syntax Count : [9]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - 
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug -    #: Token/Syntax             ≒ Symbolic Id[SymbolNo]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - --------------------------------------------------------------
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - ParsingSvr.parsingSql Start~!!
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[0][SELECT][1575]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[1][EABN_YON][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[2][FROM][594]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[3][TB_IIS_ACIF_I_A][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[4][WHERE][2210]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[5][ACNM][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[6][=][2374]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[7][?][2364]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[8][;][2372]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - [0] Output Result-------------------------
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - [0] ---------------------------------------
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - < Java소스에서 SQL 출력 [0] >
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - SELECT /*+ INDEX(TB_IIS_ACIF_I_A_PK ACIF)*/  
+       ACIF.ACNM A_ACNM		-- 계좌번호        
+     , ACIF.WHBN_CSTM_NMBR A_WHBN_CSTM_NMBR		--전행고객번호    
+     , ACIF.SUB_SNRC_NMBR	--    
+     , ACIF.BNKB_NMBR    
+     , ACNT_OPEN_BRCD    
+  FROM TB_IIS_ACIF_I_A ACIF	-- 계좌정보    
+ WHERE ACIF.ACNM = ?         -- 계좌번호    
+;
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - [Antlr] Parser/Lexer Grammar : [PlSqlParser.g4, PlSqlLexer.g4]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - [Antlr] Token/Syntax Count : [30]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - 
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug -    #: Token/Syntax             ≒ Symbolic Id[SymbolNo]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - --------------------------------------------------------------
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - ParsingSvr.parsingSql Start~!!
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[0][SELECT][1575]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[1][ACIF][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[2][.][2345]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[3][ACNM][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[4][A_ACNM][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[5][,][2358]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[6][ACIF][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[7][.][2345]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[8][WHBN_CSTM_NMBR][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[9][A_WHBN_CSTM_NMBR][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[10][,][2358]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[11][ACIF][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[12][.][2345]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[13][SUB_SNRC_NMBR][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[14][,][2358]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[15][ACIF][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[16][.][2345]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[17][BNKB_NMBR][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[18][,][2358]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[19][ACNT_OPEN_BRCD][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[20][FROM][594]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[21][TB_IIS_ACIF_I_A][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[22][ACIF][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[23][WHERE][2210]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[24][ACIF][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[25][.][2345]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[26][ACNM][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[27][=][2374]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[28][?][2364]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[29][;][2372]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - [0] Output Result-------------------------
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - [0] ---------------------------------------
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - < Java소스에서 SQL 출력 [0] >
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - UPDATE TB_IIS_ACIF_I_A ACIF	-- 계좌정보    
+   SET LINK_ACN = ?                      
+ WHERE ACIF.ACNM = ?         -- 계좌번호    
+;
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - [Antlr] Parser/Lexer Grammar : [PlSqlParser.g4, PlSqlLexer.g4]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - [Antlr] Token/Syntax Count : [14]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - 
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug -    #: Token/Syntax             ≒ Symbolic Id[SymbolNo]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - --------------------------------------------------------------
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - ParsingSvr.parsingSql Start~!!
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[0][UPDATE][2119]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[1][TB_IIS_ACIF_I_A][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[2][ACIF][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[3][SET][1596]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[4][LINK_ACN][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[5][=][2374]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[6][?][2364]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[7][WHERE][2210]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[8][ACIF][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[9][.][2345]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[10][ACNM][2383]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[11][=][2374]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[12][?][2364]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[13][;][2372]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - [0] Output Result-------------------------
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - [0] ---------------------------------------
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - =============================================
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - convertJavaSource finished time [2.574/Sec]
+[2024-10-31 13:48:03] [Log.debug():22] DEBUG debug - =============================================
+[2024-10-31 13:48:40] [Log.debug():22] DEBUG debug - ============================================================
+[2024-10-31 13:48:40] [Log.debug():22] DEBUG debug - convert Java File 전체건수 = [1]
+[2024-10-31 13:48:40] [Log.debug():22] DEBUG debug - convert Sql File 전체건수 = [1]
+[2024-10-31 13:48:40] [Log.debug():22] DEBUG debug - ============================================================
+[2024-10-31 13:48:40] [Log.debug():22] DEBUG debug - ANTLR4 Java/SQL*Parser: Release 0.5 - Production on Wed Nov 10 2023
+[2024-10-31 13:48:40] [Log.debug():22] DEBUG debug - Copyright (c) 2020-2023, IBK System co., Ltd. All Rights Reserved.
+[2024-10-31 13:48:40] [Log.debug():22] DEBUG debug - [Antlr] Java File Name : [TestDAO.java]
+
+[2024-10-31 13:48:41] [Log.debug():22] DEBUG debug - javaSrcList.size()======>1
+[2024-10-31 13:48:41] [Log.debug():22] DEBUG debug - [Antlr] Parser/Lexer Grammar : [Java8Parser.g4, Java8Lexer.g4]
+[2024-10-31 13:48:41] [Log.debug():22] DEBUG debug - [Antlr] Token/Syntax Count : [481]
+[2024-10-31 13:48:41] [Log.debug():22] DEBUG debug - 
+[2024-10-31 13:48:41] [Log.debug():22] DEBUG debug - --------------------------------------------------------------
+[2024-10-31 13:48:41] [Log.debug():22] DEBUG debug -    #: Token/Syntax             ≒ Symbolic Id[SymbolNo]
+[2024-10-31 13:48:41] [Log.debug():22] DEBUG debug - --------------------------------------------------------------
+[2024-10-31 13:48:41] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:41] [Log.debug():22] DEBUG debug -  << SQL 파싱 시작 [0]>>-------------------------
+[2024-10-31 13:48:41] [Log.debug():22] DEBUG debug - < Java소스에서 SQL 출력 [0] >
+[2024-10-31 13:48:41] [Log.debug():22] DEBUG debug - SELECT EABN_YON			-- e번호    
+  FROM TB_IIS_ACIF_I_A	-- 계좌정보    
+ WHERE ACNM = ?         -- 계좌번호    
+;
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - [Antlr] Parser/Lexer Grammar : [PlSqlParser.g4, PlSqlLexer.g4]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - [Antlr] Token/Syntax Count : [9]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - 
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug -    #: Token/Syntax             ≒ Symbolic Id[SymbolNo]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - --------------------------------------------------------------
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - ParsingSvr.parsingSql Start~!!
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[0][SELECT][1575]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[1][EABN_YON][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[2][FROM][594]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[3][TB_IIS_ACIF_I_A][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[4][WHERE][2210]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[5][ACNM][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[6][=][2374]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[7][?][2364]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[8][;][2372]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - [0] Output Result-------------------------
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - [0] ---------------------------------------
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - < Java소스에서 SQL 출력 [0] >
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - SELECT /*+ INDEX(TB_IIS_ACIF_I_A_PK ACIF)*/  
+       ACIF.ACNM A_ACNM		-- 계좌번호        
+     , ACIF.WHBN_CSTM_NMBR A_WHBN_CSTM_NMBR		--전행고객번호    
+     , ACIF.SUB_SNRC_NMBR	--    
+     , ACIF.BNKB_NMBR    
+     , ACNT_OPEN_BRCD    
+  FROM TB_IIS_ACIF_I_A ACIF	-- 계좌정보    
+ WHERE ACIF.ACNM = ?         -- 계좌번호    
+;
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - [Antlr] Parser/Lexer Grammar : [PlSqlParser.g4, PlSqlLexer.g4]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - [Antlr] Token/Syntax Count : [30]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - 
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug -    #: Token/Syntax             ≒ Symbolic Id[SymbolNo]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - --------------------------------------------------------------
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - ParsingSvr.parsingSql Start~!!
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[0][SELECT][1575]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[1][ACIF][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[2][.][2345]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[3][ACNM][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[4][A_ACNM][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[5][,][2358]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[6][ACIF][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[7][.][2345]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[8][WHBN_CSTM_NMBR][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[9][A_WHBN_CSTM_NMBR][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[10][,][2358]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[11][ACIF][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[12][.][2345]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[13][SUB_SNRC_NMBR][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[14][,][2358]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[15][ACIF][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[16][.][2345]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[17][BNKB_NMBR][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[18][,][2358]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[19][ACNT_OPEN_BRCD][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[20][FROM][594]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[21][TB_IIS_ACIF_I_A][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[22][ACIF][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[23][WHERE][2210]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[24][ACIF][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[25][.][2345]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[26][ACNM][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[27][=][2374]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[28][?][2364]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[29][;][2372]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - [0] Output Result-------------------------
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - [0] ---------------------------------------
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - < Java소스에서 SQL 출력 [0] >
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - UPDATE TB_IIS_ACIF_I_A ACIF	-- 계좌정보    
+   SET LINK_ACN = ?                      
+ WHERE ACIF.ACNM = ?         -- 계좌번호    
+;
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - [Antlr] Parser/Lexer Grammar : [PlSqlParser.g4, PlSqlLexer.g4]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - [Antlr] Token/Syntax Count : [14]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - 
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug -    #: Token/Syntax             ≒ Symbolic Id[SymbolNo]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - --------------------------------------------------------------
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - ParsingSvr.parsingSql Start~!!
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[0][UPDATE][2119]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[1][TB_IIS_ACIF_I_A][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[2][ACIF][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[3][SET][1596]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[4][LINK_ACN][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[5][=][2374]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[6][?][2364]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[7][WHERE][2210]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[8][ACIF][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[9][.][2345]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[10][ACNM][2383]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[11][=][2374]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[12][?][2364]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - Token 데이터 분류 정보[13][;][2372]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - [0] Output Result-------------------------
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - =======================================================
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - [0] ---------------------------------------
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - =============================================
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - convertJavaSource finished time [2.446/Sec]
+[2024-10-31 13:48:42] [Log.debug():22] DEBUG debug - =============================================

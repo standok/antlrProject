@@ -41,7 +41,8 @@ public class DataManager {
 	
 	private static void setDataMapDefinitionVoMap() {
 
-		Log.debug("setDataMapDefinitionVoMap start");
+		Log.debug("============================================================");
+		Log.debug("[ExcelDataLoad] 엑셀파일에서 테이블정의 데이터 추출 시작");
 		
 		double beforeTime = System.currentTimeMillis();
 		
@@ -52,11 +53,42 @@ public class DataManager {
 
 		try {
 			dataMapDefinitionVoMap = poiSvr.readExcelToMap(excelFile);
+			
+			// 테이블수
 			tableNum = dataMapDefinitionVoMap.size();
-			for(int i=0; i<dataMapDefinitionVoMap.size(); i++) {
-				HashMap tmpMap = (HashMap) dataMapDefinitionVoMap.get(i);
-				totNum = totNum + tmpMap.size();
-			}
+			
+//        	Log.debug(" < Excel Data Check > ");
+//        	Log.debug("=======================================================================================");        	
+	        for(Object key : dataMapDefinitionVoMap.keySet()) {
+	        	String tableName = (String) key;
+	        	HashMap<String, DataMapDefinitionVo> tmpMap = (HashMap<String, DataMapDefinitionVo>) dataMapDefinitionVoMap.get(tableName);
+	        	
+	        	// 컬럼수
+	        	totNum = totNum + tmpMap.size();
+	        	
+	        	// 로그확인
+//	        	Log.debug("=======================================================================================");
+//	        	Log.debug(" 테이블명 ["+tableName+"]["+tmpMap.size()+"]");
+//	        	Log.debug("=======================================================================================");	        	
+//	        	Log.debug("테이블ID | 테이블명 | 컬럼ID | 컬럼명 | 타입 | 길이 ===> 테이블명 | 테이블ID | 컬럼ID | 컬럼명 | 타입 | 길이");
+//	        	for(Object key2 : tmpMap.keySet()) {
+//					DataMapDefinitionVo vo = tmpMap.get((String)key2);
+//					Log.debug(ConverterUtil.fillPadValue(vo.getOldTableId(), ' ', false, 30)
+//							 +" | "+vo.getOldTableName()
+//							 +" | "+ConverterUtil.fillPadValue(vo.getOldColumnId(), ' ', false, 30)
+//							 +" | "+vo.getOldColumnName()
+//							 +" | "+ConverterUtil.fillPadValue(vo.getOldDataType(), ' ', false, 10)
+//							 +" | "+ConverterUtil.fillPadValue(vo.getOldDataLength(), ' ', false, 6)
+//							 +" | "+ConverterUtil.fillPadValue(vo.getNewTableId(), ' ', false, 30)
+//							 +" | "+vo.getNewTableName()
+//							 +" | "+ConverterUtil.fillPadValue(vo.getNewColumnId(), ' ', false, 30)
+//							 +" | "+vo.getNewColumnName()
+//							 +" | "+ConverterUtil.fillPadValue(vo.getNewDataType(), ' ', false, 10)
+//							 +" | "+ConverterUtil.fillPadValue(vo.getNewDataLength(), ' ', false, 6)
+//					         );
+//				}
+//	        	Log.debug("=======================================================================================");
+	        }
 		} catch (Exception e) {
 			Log.error(e);
 		}
@@ -64,14 +96,13 @@ public class DataManager {
 		
 		double diffTime = afterTime - beforeTime;
 
-		Log.debug("=======================");
-		Log.debug("== 엑셀 파일읽기 finished time ["+diffTime/1000+"/Sec]");
-		Log.debug("== 테이블건수 tableNum : ["+tableNum+"]");
-		Log.debug("== 전체건수 totNum : ["+totNum+"]");
-		Log.debug("=======================");
+		Log.debug("[ExcelDataLoad] finished time ["+diffTime/1000+"/Sec]");
+		Log.debug("[ExcelDataLoad] 테이블건수 tableNum : ["+tableNum+"]");
+		Log.debug("[ExcelDataLoad] 전체건수 totNum : ["+totNum+"]");
 	}
 	
 	public static void refresh() {
+//		setDataMapDefinitionVoList();
 		setDataMapDefinitionVoMap();
 	}
 	
