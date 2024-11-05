@@ -19,7 +19,6 @@ import com.biz.TokenInfoBiz;
 import com.svc.IConvertSvc;
 import com.svc.IParsingJavaSvr;
 import com.svc.IParsingSqlSvr;
-import com.svc.ISearchSvr;
 import com.util.Log;
 import com.util.LogManager;
 import com.vo.JavaTokenInfo;
@@ -167,7 +166,6 @@ public class ConvertSvc implements IConvertSvc {
 	private void parsingSql(StringBuilder sb) throws Exception {
 
 		IParsingSqlSvr parsingSvc = new ParsingSqlSvr();
-		ISearchSvr searchSvr = new SearchSvr();
 
 		PlSqlLexer lexer = new PlSqlLexer(CharStreams.fromString(sb.toString()));
 		TokenStream tokenStream =new CommonTokenStream(lexer);
@@ -191,11 +189,7 @@ public class ConvertSvc implements IConvertSvc {
 			LogManager.getLogger("debug").debug("sqlConList ["+i+"] Output Result -------------------------");
 			Log.logListToString(queryTokenList);
 			LogManager.getLogger("debug").debug("sqlConList ["+i+"] ---------------------------------------");
-
-			searchSvr.searchTable(sqlConList, queryTokenList);
 		}
-
-
 	}
 
 	/**
