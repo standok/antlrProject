@@ -9,30 +9,30 @@ import org.apache.log4j.LogManager;
 
 import com.biz.TokenInfoBiz;
 import com.svc.IParsingSqlSvr;
-import com.vo.SqlTokenInfo;
+import com.vo.SqlTokenInfoVo;
 
 import util.antlr.PlSqlParser;
 
 public class ParsingSqlSvr implements IParsingSqlSvr {
 
-	private List<SqlTokenInfo> queryTokenList = null;
+	private List<SqlTokenInfoVo> queryTokenList = null;
 	private int tokenIdx;
 	private int depLv;	// 쿼리 깊이
 
 	@Override
-	public List<SqlTokenInfo> getQueryTokenList() {
+	public List<SqlTokenInfoVo> getQueryTokenList() {
 		return queryTokenList;
 	}
 
 	/**
 	 * 설명 : SQL을 파싱해서 queryTokenList를 만든다.
 	 *
-	 * @param List<SqlTokenInfo> tokenList, PlSqlParser parser
+	 * @param List<SqlTokenInfoVo> tokenList, PlSqlParser parser
 	 * @return
 	 * @throws Exception
 	 */
 	@Override
-	public void parsingSql(List<SqlTokenInfo> tokenList, PlSqlParser parser) throws Exception {
+	public void parsingSql(List<SqlTokenInfoVo> tokenList, PlSqlParser parser) throws Exception {
 
 		LogManager.getLogger("debug").debug("ParsingSqlSvr.parsingSql Start~!!");
 
@@ -65,11 +65,11 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 	/**
 	 * 설명 : Select Query 파싱
 	 *
-	 * @param List<SqlTokenInfo> tokenList, PlSqlParser parser
+	 * @param List<SqlTokenInfoVo> tokenList, PlSqlParser parser
 	 * @return
 	 * @throws Exception
 	 */
-	private void parsingSelectSQL(List<SqlTokenInfo> tokenList, PlSqlParser parser) throws Exception {
+	private void parsingSelectSQL(List<SqlTokenInfoVo> tokenList, PlSqlParser parser) throws Exception {
 
 		LogManager.getLogger("debug").debug("parsingSelectSQL Start ===============================");
 
@@ -163,11 +163,11 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 					String columnMainName = tokenName.substring((tokenName.indexOf(".")+1));
 					String tableMainName = fromMap.get(tableAliasName);
 
-					queryTokenList.add(tokenInfoBiz.createSqlTokenInfo(columnMainName, aliasName, tableMainName));
+					queryTokenList.add(tokenInfoBiz.createSqlTokenInfoVo(columnMainName, aliasName, tableMainName));
 				}
 			} else {
 				for(String tableKey : fromMap.keySet()) {
-					queryTokenList.add(tokenInfoBiz.createSqlTokenInfo(tokenName, aliasName, fromMap.get(tableKey)));
+					queryTokenList.add(tokenInfoBiz.createSqlTokenInfoVo(tokenName, aliasName, fromMap.get(tableKey)));
 				}
 			}
 		}
@@ -177,11 +177,11 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 	/**
 	 * 설명 : From Query 파싱
 	 *
-	 * @param List<SqlTokenInfo> tokenList, PlSqlParser parser
+	 * @param List<SqlTokenInfoVo> tokenList, PlSqlParser parser
 	 * @return Map<String, String>
 	 * @throws Exception
 	 */
-	private Map<String, String> parsingFromSQL(List<SqlTokenInfo> tokenList, PlSqlParser parser) throws Exception {
+	private Map<String, String> parsingFromSQL(List<SqlTokenInfoVo> tokenList, PlSqlParser parser) throws Exception {
 
 		LogManager.getLogger("debug").debug("parsingFromSQL Start ===============================");
 
@@ -248,11 +248,11 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 	/**
 	 * 설명 : Where Query 파싱
 	 *
-	 * @param List<SqlTokenInfo> tokenList, PlSqlParser parser
+	 * @param List<SqlTokenInfoVo> tokenList, PlSqlParser parser
 	 * @return Map<String, String>
 	 * @throws Exception
 	 */
-	public Map<String, String> parsingWhereSQL(List<SqlTokenInfo> tokenList, PlSqlParser parser) throws Exception {
+	public Map<String, String> parsingWhereSQL(List<SqlTokenInfoVo> tokenList, PlSqlParser parser) throws Exception {
 
 		LogManager.getLogger("debug").debug("parsingWhereSQL Start ===============================");
 

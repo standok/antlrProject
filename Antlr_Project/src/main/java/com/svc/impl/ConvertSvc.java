@@ -13,19 +13,17 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.Vocabulary;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 import com.biz.TokenInfoBiz;
 import com.svc.IConvertSvc;
+import com.svc.ICreateFileSvr;
 import com.svc.IParsingJavaSvr;
 import com.svc.IParsingSqlSvr;
 import com.util.Log;
 import com.util.LogManager;
-import com.vo.JavaTokenInfo;
-import com.vo.SqlTokenInfo;
+import com.vo.JavaTokenInfoVo;
+import com.vo.SqlTokenInfoVo;
 
-import util.antlr.Java8Lexer;
-import util.antlr.Java8Parser;
 import util.antlr.PlSqlLexer;
 import util.antlr.PlSqlParser;
 
@@ -52,10 +50,10 @@ public class ConvertSvc implements IConvertSvc {
 
 		if(fileName.toUpperCase().endsWith(".JAVA")) {
 			while((line=br.readLine()) != null) sb.append(line + "\n");
-			parsingJava(sb);
+			convertJava(sb);
 		} else if(fileName.toUpperCase().endsWith(".SQL")) {
 			while((line=br.readLine()) != null) sb.append(line.toUpperCase() + "\n");
-			parsingSql(sb);
+			convertSql(sb);
 		}
 	}
 
@@ -72,100 +70,76 @@ public class ConvertSvc implements IConvertSvc {
 	}
 
 	/**
-	 * 설명 : StringBuilder로 변환된 Java 소스 파싱
+	 * 설명 : StringBuilder로 변환된 Java 소스 변환시작
 	 *
 	 * @param StringBuilder
 	 * @return
 	 * @throws Exception, IOException
 	 */
-	private void parsingJava(StringBuilder sb) throws Exception, IOException {
+	private void convertJava(StringBuilder sb) throws Exception, IOException {
 
+		/**********************************
+		 * TokenStream에서 필요한정보를 List로 변환한다
+		 **********************************/
 		IParsingJavaSvr parsingJavaSvc = new ParsingJavaSvr();
+		parsingJavaSvc.parsingJava(sb);
 
-		Java8Lexer lexer = new Java8Lexer(CharStreams.fromString(sb.toString()));
-		CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
-		Java8Parser parser = new Java8Parser(commonTokenStream);
-		ParseTree tree = parser.compilationUnit();
-		//Log.debug("result:"+tree.toStringTree(parser));
-		//parser.setBuildParseTree(true);
+		List<JavaTokenInfoVo> javaConList = parsingJavaSvc.getJavaTokenList();
 
-		List<List<JavaTokenInfo>> javaSrcList = getJavaConList(parser, commonTokenStream);
+		LogManager.getLogger("debug").debug(" << SQL 파싱 시작 >>-------------------------");
 
-		LogManager.getLogger("debug").debug("javaSrcList.size()======>"+javaSrcList.size());
+		StringBuilder sbSql = new StringBuilder();
 
-		for(int i=0; i<javaSrcList.size(); i++) {
-			List<JavaTokenInfo> javaTokenList = javaSrcList.get(i);
-			Log.printInfomation(lexer, parser, javaTokenList);
+		int sqlCnt = 1;
 
-			// SQL문만 가져오기
-			List<JavaTokenInfo> parsingSqlList = parsingJavaSvc.getSqlInJava(javaTokenList);
+		for(int idx = 0; idx < javaConList.size(); idx++) {
+			String tokenName = javaConList.get(idx).getTokenName();
+//			int tokenType = javaConList.get(idx).getTokenType();
 
-			LogManager.getLogger("debug").debug(" << SQL 파싱 시작 ["+i+"]>>-------------------------");
-			//Log.logListToString(parser, parsingSqlList);
+			// SQL(전환대상)만 조회
+			if(javaConList.get(idx).isConvert()) {
+				sbSql.append(tokenName.replace("\"","").replace("\\n", "")+"\n");
+			}
 
-			StringBuilder sbSql = new StringBuilder();
-			for(int idx=0; idx<parsingSqlList.size(); idx++) {
-				String tokenName = parsingSqlList.get(idx).getTokenName();
-				int tokenType = parsingSqlList.get(idx).getTokenType();
+			// 마지막줄에서 SQL 파싱
+			if(javaConList.get(idx).isSqlLastLine()) {
 
-				if(tokenType == Java8Parser.SEMI) {
-					sbSql.append(tokenName.replace("\\n", ""));
-					LogManager.getLogger("debug").debug("< Java소스에서 SQL 출력 ["+i+"] >");
-					LogManager.getLogger("debug").debug(sbSql.toString());
+				// 구분자 추가
+				sbSql.append(";");
 
-					// SQL 파싱
-					parsingSql(sbSql);
+				LogManager.getLogger("debug").debug("< Java소스에서 SQL 출력 ["+(sqlCnt++)+"] >");
+				LogManager.getLogger("debug").debug(sbSql.toString());
 
-					// 초기화
-					sbSql = new StringBuilder();
-				} else {
-					sbSql.append(tokenName.replace("\\n", "")+"\n");
-				}
+				// SQL 파싱
+				convertSql(sbSql);
+
+				// 변수 초기화
+				sbSql = new StringBuilder();
+
+				// SQL 변환작업 시작
+				//
+
 			}
 		}
+
+		/**********************************
+		 * 새로운 Java 파일 생성
+		 **********************************/
+		ICreateFileSvr createFileSvr = new CreateFileSvr();
+		createFileSvr.createJavaFile(javaConList);
+
 	}
 
 	/**
-	 * 설명 : CommonTokenStream에서 Token을 분류
-	 *
-	 * @param Java8Parser parser, CommonTokenStream commonTokenStream
-	 * @return List<List<JavaTokenInfo>>
-	 * @throws
-	 */
-	private List<List<JavaTokenInfo>> getJavaConList(Java8Parser parser, CommonTokenStream commonTokenStream) {
-
-		List<List<JavaTokenInfo>> javaSrcList = new ArrayList<>();
-		List<JavaTokenInfo> list = new ArrayList<>();
-		JavaTokenInfo tokenInfo = new JavaTokenInfo();
-
-		Vocabulary vocabulary = parser.getVocabulary();
-
-		for(int i = 0; i<commonTokenStream.size(); i++) {
-			int tokenType = commonTokenStream.get(i).getType();
-			String tokenName = commonTokenStream.get(i).getText();
-			String symbolicName = vocabulary.getSymbolicName(tokenType);
-
-			tokenInfo = new JavaTokenInfo();
-			tokenInfo.setTokenType(tokenType);
-			tokenInfo.setSymbolicName(symbolicName);
-			tokenInfo.setTokenName(tokenName);
-
-			list.add(tokenInfo);
-		}
-		javaSrcList.add(list);
-		return javaSrcList;
-	}
-
-	/**
-	 * 설명 : SQL 파싱
+	 * 설명 : SQL convert
 	 *
 	 * @param StringBuilder
 	 * @return
 	 * @throws Exception
 	 */
-	private void parsingSql(StringBuilder sb) throws Exception {
+	private void convertSql(StringBuilder sb) throws Exception {
 
-		IParsingSqlSvr parsingSvc = new ParsingSqlSvr();
+		IParsingSqlSvr parsingSqlSvc = new ParsingSqlSvr();
 
 		PlSqlLexer lexer = new PlSqlLexer(CharStreams.fromString(sb.toString()));
 		TokenStream tokenStream =new CommonTokenStream(lexer);
@@ -174,21 +148,23 @@ public class ConvertSvc implements IConvertSvc {
 
 		parser.data_manipulation_language_statements();
 
-		List<List<SqlTokenInfo>> sqlConList = getSqlConList(parser, tokenStream);
+//		Vocabulary vocabulary = parser.getVocabulary();
+
+		List<List<SqlTokenInfoVo>> sqlConList = getSqlConList(parser, tokenStream);
 
 		for(int i=0; i<sqlConList.size(); i++) {
-			List<SqlTokenInfo> tokenList = sqlConList.get(i);
+			List<SqlTokenInfoVo> tokenList = sqlConList.get(i);
 			Log.printInfomation(lexer, parser, tokenList);
 
 			// SQL파싱 Svc 호출
-			parsingSvc.parsingSql(tokenList, parser);
+			parsingSqlSvc.parsingSql(tokenList, parser);
 
 			// SQL에서 변경할 queryToken 리스트를 가져온다
-			List<SqlTokenInfo> queryTokenList = parsingSvc.getQueryTokenList();
+			List<SqlTokenInfoVo> queryTokenList = parsingSqlSvc.getQueryTokenList();
 
-			LogManager.getLogger("debug").debug("sqlConList ["+i+"] Output Result -------------------------");
-			Log.logListToString(queryTokenList);
-			LogManager.getLogger("debug").debug("sqlConList ["+i+"] ---------------------------------------");
+			LogManager.getLogger("debug").debug("queryTokenList Output Result ["+i+"] ---------------------------------------");
+			Log.logSqlListToString(queryTokenList);
+			LogManager.getLogger("debug").debug("queryTokenList Output Result ["+i+"] ---------------------------------------");
 		}
 	}
 
@@ -199,11 +175,11 @@ public class ConvertSvc implements IConvertSvc {
 	 * @return List<List<TokenInfo>>
 	 * @throws
 	 */
-	private List<List<SqlTokenInfo>> getSqlConList(PlSqlParser parser, TokenStream tokenStream) {
+	private List<List<SqlTokenInfoVo>> getSqlConList(PlSqlParser parser, TokenStream tokenStream) {
 		TokenInfoBiz tokenInfoBiz = new TokenInfoBiz();
 
-		List<List<SqlTokenInfo>> sqlConList = new ArrayList<>();
-		List<SqlTokenInfo> list = new ArrayList<>();
+		List<List<SqlTokenInfoVo>> sqlConList = new ArrayList<>();
+		List<SqlTokenInfoVo> list = new ArrayList<>();
 
 		Vocabulary vocabulary = parser.getVocabulary();
 
@@ -218,7 +194,7 @@ public class ConvertSvc implements IConvertSvc {
 			if(tokenType == PlSqlParser.MULTI_LINE_COMMENT) continue;
 			if(tokenType == PlSqlParser.REMARK_COMMENT) continue;
 
-			list.add(tokenInfoBiz.createSqlTokenInfo(tokenName, tokenType, symbolicName));
+			list.add(tokenInfoBiz.createSqlTokenInfoVo(tokenName, tokenType, symbolicName));
 
 			if(tokenType == PlSqlParser.SEMICOLON) {
 				sqlConList.add(list);

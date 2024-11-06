@@ -2,16 +2,19 @@ package com.svc;
 
 import java.util.List;
 
-import com.vo.JavaTokenInfo;
+import com.vo.JavaTokenInfoVo;
 
 public interface IParsingJavaSvr {
 
+	public List<JavaTokenInfoVo> getJavaTokenList();
+
 	/**
-	 * 설명 : Java 소스에서 SQL문을 추출
+	 * 설명 : String을 Parsing해서 JavaTokenList 정보 저장
 	 *
-	 * @param List<JavaTokenInfo> tokenList
-	 * @return List<JavaTokenInfo>
-	 * @throws Exception
+	 * @param StringBuilder
+	 * @return
+	 * @throws
 	 */
-	public List<JavaTokenInfo> getSqlInJava(List<JavaTokenInfo> tokenList) throws Exception;
+	public void parsingJava(StringBuilder sb) throws Exception;
+
 }

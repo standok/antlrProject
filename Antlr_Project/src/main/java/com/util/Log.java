@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.antlr.v4.runtime.Vocabulary;
 
-import com.vo.JavaTokenInfo;
-import com.vo.SqlTokenInfo;
+import com.vo.JavaTokenInfoVo;
+import com.vo.SqlTokenInfoVo;
 
 import util.antlr.Java8Lexer;
 import util.antlr.Java8Parser;
@@ -38,14 +38,12 @@ public class Log extends LogManager {
 		System.out.println(bos.toString());
 	}
 
-	public static void logListToString(Java8Parser parser, List<JavaTokenInfo> tokenList) {
-		Vocabulary vocabulary = parser.getVocabulary();
-
+	public static void logJavaListToString(List<JavaTokenInfoVo> tokenList) {
 		Log.debug("=======================================================");
 		for(int i=0; i<tokenList.size(); i++) {
 			String tokenName = tokenList.get(i).getTokenName();
 			int tokenType = tokenList.get(i).getTokenType();
-			String symbolicName = vocabulary.getSymbolicName(tokenType);
+			String symbolicName = tokenList.get(i).getSymbolicName();
 
 			String lastStr = "";
 			if(tokenType == PlSqlParser.REGULAR_ID) lastStr = "*";
@@ -56,7 +54,7 @@ public class Log extends LogManager {
 		Log.debug("=======================================================");
 	}
 
-	public static void logListToString(List<SqlTokenInfo> tokenList) {
+	public static void logSqlListToString(List<SqlTokenInfoVo> tokenList) {
 		Log.debug("=======================================================");
 		for(int i=0; i<tokenList.size(); i++) {
 			String tokenName = tokenList.get(i).getTokenName();
@@ -82,7 +80,7 @@ public class Log extends LogManager {
 		Log.debug("=======================================================");
 	}
 
-	public static void printInfomation(Java8Lexer lexer, Java8Parser parser, List<JavaTokenInfo> tokenList) {
+	public static void printInfomation(Java8Lexer lexer, Java8Parser parser, List<JavaTokenInfoVo> tokenList) {
 		Log.debug("[Antlr] Parser/Lexer Grammar : ["+parser.getGrammarFileName()+", "+lexer.getGrammarFileName()+"]");
 		Log.debug("[Antlr] Token/Syntax Count : ["+tokenList.size()+"]");
 		Log.debug("");
@@ -94,13 +92,15 @@ public class Log extends LogManager {
 		Vocabulary vocabulary = parser.getVocabulary();
 
 		for(int i=0; i<tokenList.size(); i++) {
+			int tokenIndex = tokenList.get(i).getTokenIndex();
 			String tokenName = tokenList.get(i).getTokenName();
 			int tokenType = tokenList.get(i).getTokenType();
 			String symbolicName = vocabulary.getSymbolicName(tokenType);
 
 			String lastStr = "";
-			if(tokenType == Java8Parser.Identifier) lastStr = "*";
-			Log.debug(ConverterUtil.padString(Integer.toString(i+1), 4, " ", true)
+//			if(tokenType == Java8Parser.Identifier) lastStr = "*";
+			if(tokenList.get(i).isConvert()) lastStr = "*";
+			Log.debug(ConverterUtil.padString(Integer.toString(tokenIndex), 4, " ", true)
 					 +":"+ConverterUtil.rightBytesPad(tokenName, 24)
 					 +" ≒ "+symbolicName+"["+tokenType+"]"+lastStr);
 		}
@@ -108,7 +108,7 @@ public class Log extends LogManager {
 		Log.debug("=======================================================");
 	}
 
-	public static void printInfomation(PlSqlLexer lexer, PlSqlParser parser, List<SqlTokenInfo> tokenList) {
+	public static void printInfomation(PlSqlLexer lexer, PlSqlParser parser, List<SqlTokenInfoVo> tokenList) {
 		Log.debug("[Antlr] Parser/Lexer Grammar : ["+parser.getGrammarFileName()+", "+lexer.getGrammarFileName()+"]");
 		Log.debug("[Antlr] Token/Syntax Count : ["+tokenList.size()+"]");
 		Log.debug("");

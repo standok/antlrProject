@@ -1,39 +1,41 @@
 package com.biz;
 
-import com.vo.JavaTokenInfo;
-import com.vo.SqlTokenInfo;
+import com.vo.JavaTokenInfoVo;
+import com.vo.SqlTokenInfoVo;
 
 public class TokenInfoBiz {
 
-	public JavaTokenInfo createJavaTokenInfo(String tokenName, int tokenType, String symbolicName, String varName, String varType) {
-		JavaTokenInfo javaTokenInfo = new JavaTokenInfo();
-		javaTokenInfo.setTokenName(tokenName);
-		javaTokenInfo.setTokenType(tokenType);
-		javaTokenInfo.setSymbolicName(symbolicName);
-		javaTokenInfo.setVarName(varName);
-		javaTokenInfo.setVarType(varType);
-		return javaTokenInfo;
+	public JavaTokenInfoVo createJavaTokenInfoVo(int tokenIndex, String tokenName, int tokenType, String symbolicName, int tokenLine, String varName, String varType) {
+		JavaTokenInfoVo javaTokenInfoVo = new JavaTokenInfoVo();
+		javaTokenInfoVo.setTokenIndex(tokenIndex);
+		javaTokenInfoVo.setTokenName(tokenName);
+		javaTokenInfoVo.setTokenType(tokenType);
+		javaTokenInfoVo.setSymbolicName(symbolicName);
+		javaTokenInfoVo.setTokenLine(tokenLine);
+		javaTokenInfoVo.setVarName(varName);
+		javaTokenInfoVo.setVarType(varType);
+		return javaTokenInfoVo;
 	}
 
-	public JavaTokenInfo createJavaTokenInfo(String tokenName, int tokenType) {
-		return this.createJavaTokenInfo(tokenName, tokenType, "", "", "");
+	public JavaTokenInfoVo createJavaTokenInfoVo(int tokenIndex, String tokenName, int tokenType, int tokenLine) {
+		return this.createJavaTokenInfoVo(tokenIndex, tokenName, tokenType, "", tokenLine, "", "");
 	}
 
-	public SqlTokenInfo createSqlTokenInfo(String tokenName, int tokenType, String symbolicName, String aliasName, String tableName) {
-		SqlTokenInfo sqlTokenInfo = new SqlTokenInfo();
-		sqlTokenInfo.setTokenName(tokenName);
-		sqlTokenInfo.setTokenType(tokenType);
-		sqlTokenInfo.setSymbolicName(symbolicName);
-		sqlTokenInfo.setAliasName(aliasName);
-		sqlTokenInfo.setTableName(tableName);
-		return sqlTokenInfo;
+	public SqlTokenInfoVo createSqlTokenInfoVo(String tokenName, int tokenType, String symbolicName, String aliasName, String tableName) {
+		SqlTokenInfoVo sqlTokenInfoVo = new SqlTokenInfoVo();
+		sqlTokenInfoVo.setTokenName(tokenName);
+		sqlTokenInfoVo.setTokenType(tokenType);
+		sqlTokenInfoVo.setSymbolicName(symbolicName);
+		sqlTokenInfoVo.setAliasName(aliasName);
+		sqlTokenInfoVo.setTableName(tableName);
+		return sqlTokenInfoVo;
 	}
 
-	public SqlTokenInfo createSqlTokenInfo(String tokenName, String aliasName, String tableName) {
-		return this.createSqlTokenInfo(tokenName, 0, "", aliasName, tableName);
+	public SqlTokenInfoVo createSqlTokenInfoVo(String tokenName, String aliasName, String tableName) {
+		return this.createSqlTokenInfoVo(tokenName, 0, "", aliasName, tableName);
 	}
 
-	public SqlTokenInfo createSqlTokenInfo(String tokenName, int tokenType, String symbolicName) {
-		return this.createSqlTokenInfo(tokenName, tokenType, symbolicName, "", "");
+	public SqlTokenInfoVo createSqlTokenInfoVo(String tokenName, int tokenType, String symbolicName) {
+		return this.createSqlTokenInfoVo(tokenName, tokenType, symbolicName, "", "");
 	}
 }
