@@ -8,6 +8,7 @@ public class SqlTokenInfoVo {
 	private String symbolicName;		// 토큰타입명
 	private int tokenLine;				// 토큰라인
 
+	private String rolePosition;		// 역활위치(Col: 컬럼, Tab:테이블)
 	private String aliasName;			// alias명
 	private String tableName;			// 테이블명
 
@@ -43,6 +44,12 @@ public class SqlTokenInfoVo {
 	}
 	public void setTokenLine(int tokenLine) {
 		this.tokenLine = tokenLine;
+	}
+	public String getRolePosition() {
+		return rolePosition;
+	}
+	public void setRolePosition(String rolePosition) {
+		this.rolePosition = rolePosition;
 	}
 	public String getAliasName() {
 		return aliasName;

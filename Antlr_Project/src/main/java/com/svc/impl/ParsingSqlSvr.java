@@ -5,19 +5,35 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.Vocabulary;
 import org.apache.log4j.LogManager;
 
 import com.biz.TokenInfoBiz;
 import com.svc.IParsingSqlSvr;
+import com.util.Log;
 import com.vo.SqlTokenInfoVo;
 
+import util.antlr.PlSqlLexer;
 import util.antlr.PlSqlParser;
 
 public class ParsingSqlSvr implements IParsingSqlSvr {
 
+	private List<List<SqlTokenInfoVo>> sqlConList = null;
 	private List<SqlTokenInfoVo> queryTokenList = null;
+
+	private PlSqlLexer lexer = null;
+	private PlSqlParser parser = null;
+
 	private int tokenIdx;
 	private int depLv;	// 쿼리 깊이
+
+	@Override
+	public List<List<SqlTokenInfoVo>> getSqlConList() {
+		return sqlConList;
+	}
 
 	@Override
 	public List<SqlTokenInfoVo> getQueryTokenList() {
@@ -25,14 +41,65 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 	}
 
 	/**
-	 * 설명 : SQL을 파싱해서 queryTokenList를 만든다.
+	 * 설명 : SQL 파일내용을 파싱해서 getSqlConList를 만든다.
 	 *
-	 * @param List<SqlTokenInfoVo> tokenList, PlSqlParser parser
+	 * @param StringBuilder sb
 	 * @return
 	 * @throws Exception
 	 */
 	@Override
-	public void parsingSql(List<SqlTokenInfoVo> tokenList, PlSqlParser parser) throws Exception {
+	public void parsingSql(StringBuilder sb) throws Exception {
+
+		sqlConList = new ArrayList<>();
+
+		lexer = new PlSqlLexer(CharStreams.fromString(sb.toString()));
+		TokenStream tokenStream =new CommonTokenStream(lexer);
+		parser = new PlSqlParser(tokenStream);
+		parser.setBuildParseTree(true);
+
+		parser.data_manipulation_language_statements();
+
+		TokenInfoBiz tokenInfoBiz = new TokenInfoBiz();
+
+		List<SqlTokenInfoVo> list = new ArrayList<>();
+
+		Vocabulary vocabulary = parser.getVocabulary();
+
+		// TokenStream -> sqlConList 변환
+		for(int i = 0; i<tokenStream.size(); i++) {
+			int tokenIndex = tokenStream.get(i).getTokenIndex();
+			String tokenName = tokenStream.get(i).getText();
+			int tokenType = tokenStream.get(i).getType();
+			String symbolicName = vocabulary.getSymbolicName(tokenType);
+			int tokenLine = tokenStream.get(i).getLine();
+
+			// TODO: 주석 제거 -> 차후 이부분을 주석하고 처리해야 깔끔할듯
+//			if(tokenType == PlSqlParser.COMMENT) continue;
+//			if(tokenType == PlSqlParser.SINGLE_LINE_COMMENT) continue;
+//			if(tokenType == PlSqlParser.MULTI_LINE_COMMENT) continue;
+//			if(tokenType == PlSqlParser.REMARK_COMMENT) continue;
+
+			list.add(tokenInfoBiz.createSqlTokenInfoVo(tokenIndex, tokenName, tokenType, symbolicName, tokenLine));
+
+			if(tokenType == PlSqlParser.SEMICOLON) {
+				Log.printInfomation(lexer, parser, list);
+
+				sqlConList.add(list);
+
+				list = new ArrayList<>();
+			}
+		}
+	}
+
+	/**
+	 * 설명 : Query를 파싱해서 queryTokenList를 만든다.
+	 *
+	 * @param List<SqlTokenInfoVo> tokenList
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public void parsingQuery(List<SqlTokenInfoVo> tokenList) throws Exception {
 
 		LogManager.getLogger("debug").debug("ParsingSqlSvr.parsingSql Start~!!");
 
@@ -49,13 +116,13 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 			LogManager.getLogger("debug").debug("Token 데이터 분류 정보["+depLv+"]["+tokenIdx+"]["+tokenName+"]["+tokenType+"]");
 
 			if (tokenType == PlSqlParser.SELECT) {
-				parsingSelectSQL(tokenList, parser);
+				parsingSelectSQL(tokenList);
 			} else if (tokenType == PlSqlParser.UPDATE) {
-//				parsingUpdateSQL(tokenList, parser);
+//				parsingUpdateSQL(tokenList);
 			} else if (tokenType == PlSqlParser.DELETE) {
-//				parsingDeleteSQL(tokenList, parser);
+//				parsingDeleteSQL(tokenList);
 			} else if (tokenType == PlSqlParser.WITH) {
-//				parsingWithAsSQL(tokenList, parser);
+//				parsingWithAsSQL(tokenList);
 			} else {
 
 			}
@@ -65,11 +132,11 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 	/**
 	 * 설명 : Select Query 파싱
 	 *
-	 * @param List<SqlTokenInfoVo> tokenList, PlSqlParser parser
+	 * @param List<SqlTokenInfoVo> tokenList
 	 * @return
 	 * @throws Exception
 	 */
-	private void parsingSelectSQL(List<SqlTokenInfoVo> tokenList, PlSqlParser parser) throws Exception {
+	private void parsingSelectSQL(List<SqlTokenInfoVo> tokenList) throws Exception {
 
 		LogManager.getLogger("debug").debug("parsingSelectSQL Start ===============================");
 
@@ -106,16 +173,16 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 					||tokenType == PlSqlParser.SEMICOLON) {
 				throw new Exception("무효한 토큰값이 들어옴");
 			} else if (tokenType == PlSqlParser.SELECT) {
-				parsingSelectSQL(tokenList, parser);
+				parsingSelectSQL(tokenList);
 			} else if (tokenType == PlSqlParser.COMMA
 					||tokenType == PlSqlParser.PERIOD
 					||tokenList.get(tokenIdx+1).getTokenType() == PlSqlParser.PERIOD) {
 				LogManager.getLogger("debug").debug(logStr);
 				continue;
 			} else if (tokenType == PlSqlParser.FROM) {
-				fromMap = parsingFromSQL(tokenList, parser);
+				fromMap = parsingFromSQL(tokenList);
 			} else if (tokenType == PlSqlParser.WHERE) {
-				whereMap = parsingWhereSQL(tokenList, parser);
+				whereMap = parsingWhereSQL(tokenList);
 				break;
 			} else if (tokenType == PlSqlParser.REGULAR_ID) {
 
@@ -152,7 +219,7 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 //		LogManager.getLogger("debug").debug("==whereMap==");
 //		Log.logMapToString(whereMap);
 
-		// 리턴값 세팅
+		// token에 테이블 정보 입력하기
 		for(String aliasName : selectMap.keySet()) {
 			String tokenName = selectMap.get(aliasName);
 
@@ -177,11 +244,11 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 	/**
 	 * 설명 : From Query 파싱
 	 *
-	 * @param List<SqlTokenInfoVo> tokenList, PlSqlParser parser
+	 * @param List<SqlTokenInfoVo> tokenList
 	 * @return Map<String, String>
 	 * @throws Exception
 	 */
-	private Map<String, String> parsingFromSQL(List<SqlTokenInfoVo> tokenList, PlSqlParser parser) throws Exception {
+	private Map<String, String> parsingFromSQL(List<SqlTokenInfoVo> tokenList) throws Exception {
 
 		LogManager.getLogger("debug").debug("parsingFromSQL Start ===============================");
 
@@ -220,8 +287,12 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 					||tokenType == PlSqlParser.SEMICOLON) {
 				throw new Exception("무효한 토큰값이 들어옴");
 			} else if (tokenType == PlSqlParser.SELECT) {
-				parsingSelectSQL(tokenList, parser);
-			} else if (tokenType == PlSqlParser.COMMA) {
+				parsingSelectSQL(tokenList);
+			} else if (tokenType == PlSqlParser.COMMENT
+					||tokenType == PlSqlParser.SINGLE_LINE_COMMENT
+					||tokenType == PlSqlParser.MULTI_LINE_COMMENT
+					||tokenType == PlSqlParser.REMARK_COMMENT
+					||tokenType == PlSqlParser.COMMA) {
 				LogManager.getLogger("debug").debug(logStr);
 				continue;
 			} else {
@@ -248,11 +319,11 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 	/**
 	 * 설명 : Where Query 파싱
 	 *
-	 * @param List<SqlTokenInfoVo> tokenList, PlSqlParser parser
+	 * @param List<SqlTokenInfoVo> tokenList
 	 * @return Map<String, String>
 	 * @throws Exception
 	 */
-	public Map<String, String> parsingWhereSQL(List<SqlTokenInfoVo> tokenList, PlSqlParser parser) throws Exception {
+	public Map<String, String> parsingWhereSQL(List<SqlTokenInfoVo> tokenList) throws Exception {
 
 		LogManager.getLogger("debug").debug("parsingWhereSQL Start ===============================");
 
@@ -294,7 +365,7 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 					) {
 				throw new Exception("무효한 토큰값이 들어옴");
 			} else if (tokenType == PlSqlParser.SELECT) {
-				parsingSelectSQL(tokenList, parser);
+				parsingSelectSQL(tokenList);
 			} else if (tokenType == PlSqlParser.COMMA
 					||tokenType == PlSqlParser.PERIOD
 					||tokenList.get(tokenIdx+1).getTokenType() == PlSqlParser.PERIOD) {

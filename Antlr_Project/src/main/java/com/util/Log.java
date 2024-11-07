@@ -98,8 +98,8 @@ public class Log extends LogManager {
 			String symbolicName = vocabulary.getSymbolicName(tokenType);
 
 			String lastStr = "";
-//			if(tokenType == Java8Parser.Identifier) lastStr = "*";
-			if(tokenList.get(i).isConvert()) lastStr = "*";
+			if(tokenType == Java8Parser.Identifier) lastStr = "*";
+			if(tokenList.get(i).isConvert()) lastStr += "<전환대상>";
 			Log.debug(ConverterUtil.padString(Integer.toString(tokenIndex), 4, " ", true)
 					 +":"+ConverterUtil.rightBytesPad(tokenName, 24)
 					 +" ≒ "+symbolicName+"["+tokenType+"]"+lastStr);
@@ -119,12 +119,14 @@ public class Log extends LogManager {
 		Vocabulary vocabulary = parser.getVocabulary();
 
 		for(int i=0; i<tokenList.size(); i++) {
+			int tokenIndex = tokenList.get(i).getTokenIndex();
 			String tokenName = tokenList.get(i).getTokenName();
 			int tokenType = tokenList.get(i).getTokenType();
 			String symbolicName = vocabulary.getSymbolicName(tokenType);
 
 			String lastStr = "";
 			if(tokenType == PlSqlParser.REGULAR_ID) lastStr = "*";
+			if(tokenList.get(i).isConvert()) lastStr += "<전환대상>";
 			Log.debug(ConverterUtil.padString(Integer.toString(i+1), 4, " ", true)
 					 +":"+ConverterUtil.rightBytesPad(tokenName, 24)
 					 +" ≒ "+symbolicName+"["+tokenType+"]"+lastStr);

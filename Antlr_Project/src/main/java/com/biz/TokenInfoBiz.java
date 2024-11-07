@@ -21,7 +21,7 @@ public class TokenInfoBiz {
 		return this.createJavaTokenInfoVo(tokenIndex, tokenName, tokenType, "", tokenLine, "", "");
 	}
 
-	public SqlTokenInfoVo createSqlTokenInfoVo(String tokenName, int tokenType, String symbolicName, String aliasName, String tableName) {
+	public SqlTokenInfoVo createSqlTokenInfoVo(int tokenIndex, String tokenName, int tokenType, String symbolicName, int tokenLine, String aliasName, String tableName) {
 		SqlTokenInfoVo sqlTokenInfoVo = new SqlTokenInfoVo();
 		sqlTokenInfoVo.setTokenName(tokenName);
 		sqlTokenInfoVo.setTokenType(tokenType);
@@ -32,10 +32,10 @@ public class TokenInfoBiz {
 	}
 
 	public SqlTokenInfoVo createSqlTokenInfoVo(String tokenName, String aliasName, String tableName) {
-		return this.createSqlTokenInfoVo(tokenName, 0, "", aliasName, tableName);
+		return this.createSqlTokenInfoVo(0, tokenName, 0, "", 0, aliasName, tableName);
 	}
 
-	public SqlTokenInfoVo createSqlTokenInfoVo(String tokenName, int tokenType, String symbolicName) {
-		return this.createSqlTokenInfoVo(tokenName, tokenType, symbolicName, "", "");
+	public SqlTokenInfoVo createSqlTokenInfoVo(int tokenIndex, String tokenName, int tokenType, String symbolicName, int tokenLine) {
+		return this.createSqlTokenInfoVo(tokenIndex, tokenName, tokenType, symbolicName, tokenLine, "", "");
 	}
 }
