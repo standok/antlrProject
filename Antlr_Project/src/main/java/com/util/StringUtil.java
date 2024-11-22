@@ -2,7 +2,14 @@ package com.util;
 
 import java.nio.charset.Charset;
 
-public class ConverterUtil {
+public class StringUtil {
+
+	public static boolean isEmtpy(String str) {
+		if(str == null || "".equals(str.trim())) {
+			return true;
+		}
+		return false;
+	}
 
 	public static String rightPad(String str, int size, char padChar) {
 		return padString(str, size, String.valueOf(padChar), false);

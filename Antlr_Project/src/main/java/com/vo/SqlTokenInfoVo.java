@@ -10,7 +10,7 @@ public class SqlTokenInfoVo {
 
 	private String rolePosition;		// 역활위치(Col: 컬럼, Tab:테이블)
 	private String aliasName;			// alias명
-	private String tableName;			// 테이블명
+	private String tableId;				// 테이블ID
 
 	private boolean isConvert = false;	// 전환여부
 	private String convertRule = "";	// 변환 규칙
@@ -57,11 +57,11 @@ public class SqlTokenInfoVo {
 	public void setAliasName(String aliasName) {
 		this.aliasName = aliasName;
 	}
-	public String getTableName() {
-		return tableName;
+	public String getTableId() {
+		return tableId;
 	}
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
+	public void setTableId(String tableId) {
+		this.tableId = tableId;
 	}
 	public boolean isConvert() {
 		return isConvert;

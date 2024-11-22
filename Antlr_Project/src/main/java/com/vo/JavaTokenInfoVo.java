@@ -12,7 +12,8 @@ public class JavaTokenInfoVo {
 	private String varName;				// 변수명
 
 	private boolean isConvert = false;	// 전환여부
-	private String convertRule = "";	// 변환 규칙
+	private String convertBufferName;	// 변환 StringBuffer Name
+	private String convertRule;			// 변환 규칙
 
 	private boolean isSqlLastLine = false;	// SQL 마지막 라인을 표시
 
@@ -63,6 +64,12 @@ public class JavaTokenInfoVo {
 	}
 	public void setConvert(boolean isConvert) {
 		this.isConvert = isConvert;
+	}
+	public String getConvertBufferName() {
+		return convertBufferName;
+	}
+	public void setConvertBufferName(String convertBufferName) {
+		this.convertBufferName = convertBufferName;
 	}
 	public String getConvertRule() {
 		return convertRule;

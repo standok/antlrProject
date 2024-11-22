@@ -18,14 +18,12 @@ import util.antlr.PlSqlParser;
 public class Log extends LogManager {
 
 	public static void debug(String msg) {
-//		Logger.getLogger("debug").debug(msg);
-		LogManager.getLogger("debug").debug(msg);
+		getLogger("debug").debug(msg);
 		System.out.println(msg);
 	}
 
 	public static void error(String msg) {
-//		Logger.getLogger("error").error(msg);
-		LogManager.getLogger("debug").debug(msg);
+		getLogger("debug").debug(msg);
 		System.out.println(msg);
 	}
 	public static void error(Exception e) {
@@ -33,9 +31,19 @@ public class Log extends LogManager {
 		PrintStream ps = new PrintStream(bos);
 		e.printStackTrace(ps);
 		ps.println();;
-//		Logger.getLogger("error").error(bos.toString());
-		LogManager.getLogger("debug").debug(bos.toString());
+//		getLogger("error").error(bos.toString());
+		getLogger("debug").debug(bos.toString());
 		System.out.println(bos.toString());
+	}
+
+	public static void printMethod(String msg) {
+		String printStr = "";
+		StackTraceElement[] tmp = Thread.currentThread().getStackTrace();
+		if(tmp.length > 2) {
+			printStr = tmp[2].getClassName()+"."+tmp[2].getMethodName();
+		}
+		getLogger("debug").debug(printStr+" "+msg);
+//		System.out.println(msg);
 	}
 
 	public static void logJavaListToString(List<JavaTokenInfoVo> tokenList) {
@@ -47,8 +55,8 @@ public class Log extends LogManager {
 
 			String lastStr = "";
 			if(tokenType == PlSqlParser.REGULAR_ID) lastStr = "*";
-			Log.debug(ConverterUtil.padString(Integer.toString(i+1), 4, " ", true)
-					 +":"+ConverterUtil.rightBytesPad(tokenName, 24)
+			Log.debug(StringUtil.padString(Integer.toString(i+1), 4, " ", true)
+					 +":"+StringUtil.rightBytesPad(tokenName, 24)
 					 +" ≒ "+symbolicName+"["+tokenType+"]"+lastStr);
 		}
 		Log.debug("=======================================================");
@@ -60,12 +68,26 @@ public class Log extends LogManager {
 			String tokenName = tokenList.get(i).getTokenName();
 			int tokenType = tokenList.get(i).getTokenType();
 			String symbolicName = tokenList.get(i).getSymbolicName();
+			String aliasName = tokenList.get(i).getAliasName();
+			String tableId = tokenList.get(i).getTableId();
 
 			String lastStr = "";
 			if(tokenType == PlSqlParser.REGULAR_ID) lastStr = "*";
-			Log.debug(ConverterUtil.padString(Integer.toString(i+1), 4, " ", true)
-					 +":"+ConverterUtil.rightBytesPad(tokenName, 24)
-					 +" ≒ "+symbolicName+"["+tokenType+"]"+lastStr);
+//			Log.debug(StringUtil.padString(Integer.toString(i+1), 4, " ", true)
+//					 +":"+StringUtil.rightBytesPad(tokenName, 24)
+//					 +" ≒ "+StringUtil.rightBytesPad(symbolicName+"["+tokenType+"]"+lastStr, 50)
+//					 +">>"+"["+StringUtil.rightBytesPad(aliasName, 20)+"]/"
+//					 +"/ "+"["+StringUtil.rightBytesPad(tableId, 20)+"]");
+			Log.debug(StringUtil.padString(Integer.toString(tokenList.get(i).getTokenIndex()+1), 4, " ", true)
+					+"/"+StringUtil.rightBytesPad(tokenList.get(i).getTokenName(), 24)
+					+"/"+tokenType
+					+"/"+symbolicName
+					+"/"+tokenList.get(i).getTokenLine()
+					+"/"+tokenList.get(i).getRolePosition()
+					+"/"+tokenList.get(i).getAliasName()
+					+"/"+tableId
+					+"/"+tokenList.get(i).isConvert()
+					+"/"+tokenList.get(i).getConvertRule());
 		}
 		Log.debug("=======================================================");
 	}
@@ -100,8 +122,8 @@ public class Log extends LogManager {
 			String lastStr = "";
 			if(tokenType == Java8Parser.Identifier) lastStr = "*";
 			if(tokenList.get(i).isConvert()) lastStr += "<전환대상>";
-			Log.debug(ConverterUtil.padString(Integer.toString(tokenIndex), 4, " ", true)
-					 +":"+ConverterUtil.rightBytesPad(tokenName, 24)
+			Log.debug(StringUtil.padString(Integer.toString(tokenIndex), 4, " ", true)
+					 +":"+StringUtil.rightBytesPad(tokenName, 24)
 					 +" ≒ "+symbolicName+"["+tokenType+"]"+lastStr);
 		}
 
@@ -127,8 +149,8 @@ public class Log extends LogManager {
 			String lastStr = "";
 			if(tokenType == PlSqlParser.REGULAR_ID) lastStr = "*";
 			if(tokenList.get(i).isConvert()) lastStr += "<전환대상>";
-			Log.debug(ConverterUtil.padString(Integer.toString(i+1), 4, " ", true)
-					 +":"+ConverterUtil.rightBytesPad(tokenName, 24)
+			Log.debug(StringUtil.padString(Integer.toString(i+1), 4, " ", true)
+					 +":"+StringUtil.rightBytesPad(tokenName, 24)
 					 +" ≒ "+symbolicName+"["+tokenType+"]"+lastStr);
 		}
 

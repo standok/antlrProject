@@ -1,11 +1,10 @@
 package com.svc;
 
-import java.util.List;
-
-import com.vo.JavaTokenInfoVo;
-import com.vo.SqlTokenInfoVo;
+import java.io.IOException;
 
 public interface ICreateFileSvr {
-	void createJavaFile(List<JavaTokenInfoVo> javaTokenList);
-	void createSqlFile(List<List<SqlTokenInfoVo>> sqlConList, List<SqlTokenInfoVo> sqlTokenList);
+
+	public void createJavaFile(String filePath, StringBuilder str) throws IOException;
+
+	public void createSqlFile(String filePath, StringBuilder str) throws IOException;
 }

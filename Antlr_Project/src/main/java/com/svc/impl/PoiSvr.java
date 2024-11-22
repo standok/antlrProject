@@ -54,8 +54,8 @@ public class PoiSvr implements IPoiSvr {
 			 *********************/
             // 엑셀파일에서 첫번째 시트 불러오기
             Sheet worksheet = workbook.getSheet("테이블정의서");
-            int startLine = Integer.getInteger(PropertyManager.getProperty("EXCEL_START_LINE"));	// 엑셀시작라인
-            int endLine = Integer.getInteger(PropertyManager.getProperty("EXCEL_END_LINE"));		// 엑셀마지막라인
+            int startLine = Integer.parseInt(PropertyManager.getProperty("EXCEL_START_LINE").trim());	// 엑셀시작라인
+            int endLine = Integer.parseInt(PropertyManager.getProperty("EXCEL_END_LINE").trim());		// 엑셀마지막라인
             /*********************/
 
             String currentTableId = "";
@@ -118,9 +118,9 @@ public class PoiSvr implements IPoiSvr {
 //                	dataVo.setNewColumnName(getValue(row.getCell(21)));		// [8](신)한글필드명
 //                	dataVo.setNewDataType(getValue(row.getCell(22)));		// [9](신)데이터속성
 //                	dataVo.setNewDataLength(getValue(row.getCell(23)));		// [10](신)데이터길이
-                	dataVo.setNewTableId(dataVo.getOldTableId()+"_NEW");	// (신)영문테이블ID-대문자
+                	dataVo.setNewTableId(dataVo.getOldTableId()+"(NEW)");	// (신)영문테이블ID-대문자
                 	dataVo.setNewTableName(dataVo.getOldTableName());		// [6](신)한글테이블명
-                	dataVo.setNewColumnId(dataVo.getOldColumnId()+"_NEW");	// [7](신)영문필드ID-대문자
+                	dataVo.setNewColumnId(dataVo.getOldColumnId()+"(NEW)");	// [7](신)영문필드ID-대문자
                 	dataVo.setNewColumnName(dataVo.getOldColumnName());		// [8](신)한글필드명
                 	dataVo.setNewDataType(dataVo.getOldDataType());			// [9](신)데이터속성
                 	dataVo.setNewDataLength(dataVo.getOldDataLength());		// [10](신)데이터길이

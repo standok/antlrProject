@@ -2,7 +2,7 @@ package com.vo;
 
 public class DataMapDefinitionVo {
 
-	private String oldTableId;			// (구)영문테이블ID-대문자	
+	private String oldTableId;			// (구)영문테이블ID-대문자
 	private String oldTableName;		// [1](구)한글테이블명
 	private String oldColumnId;			// [2](구)영문필드ID-대문자
 	private String oldColumnName;		// [3](구)한글필드명
@@ -18,7 +18,7 @@ public class DataMapDefinitionVo {
 
 	private boolean isConvert = false;	// [11]전환여부
 	private String convertRule = "";	// [12]변환 규칙
-	
+
 	public String getOldTableId() {
 		return oldTableId;
 	}
@@ -103,4 +103,5 @@ public class DataMapDefinitionVo {
 	public void setConvertRule(String convertRule) {
 		this.convertRule = convertRule;
 	}
+
 }

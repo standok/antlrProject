@@ -17,7 +17,8 @@ public class ConvertSourceMain {
 	public static void main(String[] args) {
 
 		// DataManager 초기화(임시)
-		//String tmp = DataManager.getNewColumnId("", "");
+//		String tmp = DataManager.getNewColumnId("TB_IIS_ACIF_I_A", "ACNM");
+		//Log.debug("===[ACNM]=====>["+tmp+"]");
 
 		// 소스 폴더 setting
 		String filePath = System.getProperty("user.dir") + PropertyManager.getProperty("FILE_PATH");
@@ -28,7 +29,8 @@ public class ConvertSourceMain {
 
 		String[] fileNames = dir.list();
 		for(String fileName : fileNames) {
-			if(fileName.toUpperCase().endsWith(".JAVA")) {
+//			if(fileName.toUpperCase().endsWith(".JAVA")) {
+			if(fileName.toUpperCase().endsWith("DAO.JAVA")) {	// DAO만 조회
 				javaFileList.add(new File(filePath + fileName));
 			}
 			if(fileName.toUpperCase().endsWith(".SQL")) {
@@ -46,12 +48,12 @@ public class ConvertSourceMain {
 		// Java 파일 Parsing
 		for(int i=0; i<javaFileList.size(); i++) {
 			File file = javaFileList.get(i);
-			convertJavaSource(file);
+//			convertJavaSource(file);
 		}
 
 		// SQL 파일 Parsing
 		for(File file : sqlFileList) {
-//			convertSQLSource(file);
+			convertSQLSource(file);
 		}
 	}
 
@@ -64,11 +66,11 @@ public class ConvertSourceMain {
 	 */
 	public static void convertJavaSource(File file) {
 
-		Log.debug("ANTLR4 Java/SQL*Parser: Release 0.5 - Production on Wed Nov 10 2023");
-		Log.debug("Copyright (c) 2020-2023, IBK System co., Ltd. All Rights Reserved.");
-		Log.debug("[Antlr] Java File Name : ["+file.getName()+"]\n");
+		Log.debug("ANTLR4 JavaParser: Release 0.1 - Production on Nov 20 2024 ");
+		Log.debug("Copyright (c) 2024, IBK System co., Ltd. All Rights Reserved.");
+		Log.debug("[Antlr] Java File Name : ["+file.getPath()+"]\n");
 
-		double beforeTime = System.currentTimeMillis();
+		double startTime = System.currentTimeMillis();
 
 		try {
 			convertSvc.convertFileToString(file);
@@ -78,12 +80,11 @@ public class ConvertSourceMain {
 			Log.error(e);
 		}
 
-		double afterTime = System.currentTimeMillis();
-
-		double diffTime = afterTime - beforeTime;
+		double endTime = System.currentTimeMillis();
+		double diff = (endTime - startTime) / 1000;
 
 		Log.debug("=============================================");
-		Log.debug("convertJavaSource finished time ["+diffTime/1000+"/Sec]");
+		Log.debug("convertJavaSource finished time ["+diff+"/Sec]");
 		Log.debug("=============================================");
 	}
 
@@ -96,11 +97,11 @@ public class ConvertSourceMain {
 	 */
 	public static void convertSQLSource(File file) {
 
-		Log.debug("ANTLR4 Java/SQL*Parser: Release 0.5 - Production on Wed Nov 10 2023");
-		Log.debug("Copyright (c) 2020-2023, IBK System co., Ltd. All Rights Reserved.");
-		Log.debug("[Antlr] SQL File Name : ["+file.getName()+"]");
+		Log.debug("ANTLR4 SQLParser: Release 0.1 - Production on Nov 20 2024");
+		Log.debug("Copyright (c) 2024, IBK System co., Ltd. All Rights Reserved.");
+		Log.debug("[Antlr] SQL File Name : ["+file.getPath()+"]");
 
-		double beforeTime = System.currentTimeMillis();
+		double startTime = System.currentTimeMillis();
 
 		try {
 			convertSvc.convertFileToString(file);
@@ -109,13 +110,11 @@ public class ConvertSourceMain {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		double afterTime = System.currentTimeMillis();
-
-		double diffTime = afterTime - beforeTime;
+		double endTime = System.currentTimeMillis();
+		double diff = (endTime - startTime) / 1000;
 
 		Log.debug("=============================================");
-		Log.debug("convertSQLSource finished time ["+diffTime/1000+"/Sec]");
+		Log.debug("convertSQLSource finished time ["+diff+"/Sec]");
 		Log.debug("=============================================");
 	}
 }
