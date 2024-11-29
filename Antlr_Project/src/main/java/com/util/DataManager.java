@@ -151,9 +151,10 @@ public class DataManager {
 				return newColumnId;
 			}
 
-			DataMapDefinitionVo rtnVo = (DataMapDefinitionVo) ((HashMap) dataMapDefinitionVoMap.get(oldTableId)).get(oldColumnId);
-			if( rtnVo != null ) newColumnId = rtnVo.getNewColumnId().trim();
-
+			if(dataMapDefinitionVoMap.get(oldTableId) != null) {
+				DataMapDefinitionVo rtnVo = (DataMapDefinitionVo) ((HashMap) dataMapDefinitionVoMap.get(oldTableId)).get(oldColumnId);
+				if( rtnVo != null ) newColumnId = rtnVo.getNewColumnId().trim();
+			}
 		} catch (Exception e) {
 			Log.error(e);
 		}

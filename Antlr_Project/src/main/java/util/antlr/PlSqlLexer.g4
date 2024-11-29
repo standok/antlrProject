@@ -75,7 +75,7 @@ AFD_DISKSTRING                 : 'AFD_DISKSTRING';
 AFTER                          : 'AFTER';
 AGENT                          : 'AGENT';
 AGGREGATE                      : 'AGGREGATE';
-A_LETTER                       : 'A';
+//A_LETTER                       : 'A';
 ALIAS                          : 'ALIAS';
 ALL                            : 'ALL';
 ALLOCATE                       : 'ALLOCATE';

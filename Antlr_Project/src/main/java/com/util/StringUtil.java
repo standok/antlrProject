@@ -4,6 +4,8 @@ import java.nio.charset.Charset;
 
 public class StringUtil {
 
+	public static final String WHITESPACE = " \n\r\f\t";
+
 	public static boolean isEmtpy(String str) {
 		if(str == null || "".equals(str.trim())) {
 			return true;

@@ -15,10 +15,29 @@ public class CreateFileSvr implements ICreateFileSvr {
 
 		String path = filePath.substring(0, filePath.lastIndexOf("\\"));
 		String fileName = filePath.substring(filePath.lastIndexOf("\\")+1);
-		String resultFilePath = filePath.replace(".java", "")+"_NEW.java";
+		String resultFilePath = filePath.replace(".java", "").replace(".JAVA", "")+"_NEW.java";
 //		LogManager.getLogger("debug").debug("[path]=>["+path+"]");
 //		LogManager.getLogger("debug").debug("[fileName]=>["+fileName+"]");
 //		LogManager.getLogger("debug").debug("[resultFilePath]=>["+resultFilePath+"]");
+
+		createFile(resultFilePath, str);
+
+		Log.printMethod("[END]");
+	}
+
+	@Override
+	public void createSqlFile(String filePath, StringBuilder str) throws IOException {
+		Log.printMethod("[START]");
+
+		String resultFilePath = filePath.replace(".sql", "").replace(".SQL", "")+"_NEW.sql";
+//		LogManager.getLogger("debug").debug("[resultFilePath]=>["+resultFilePath+"]");
+
+		createFile(resultFilePath, str);
+
+		Log.printMethod("[END]");
+	}
+
+	private void createFile(String filePath, StringBuilder str) throws IOException {
 
 //		File file = new File(path);
 
@@ -32,7 +51,7 @@ public class CreateFileSvr implements ICreateFileSvr {
 //        }
 
 		// 파일 생성
-		File file = new File(resultFilePath);	// File(디렉터리 객체, 파일명)
+		File file = new File(filePath);	// File(디렉터리 객체, 파일명)
 
 		if (!file.exists()) {	// 파일이 존재하지 않으면 생성
 			try {
@@ -58,15 +77,6 @@ public class CreateFileSvr implements ICreateFileSvr {
 		} finally {
 			try { if(fos != null) fos.close(); } catch(IOException ioe) { Log.error(ioe); }
 		}
-
-		Log.printMethod("[END]");
-	}
-
-	@Override
-	public void createSqlFile(String filePath, StringBuilder str) throws IOException {
-		Log.printMethod("[START]");
-
-		Log.printMethod("[END]");
 	}
 
 }

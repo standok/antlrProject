@@ -36,5 +36,6 @@ public interface IParsingSqlSvr {
 	 * @throws Exception, IOException
 	 */
 	public StringBuilder getQueryToString(boolean bufferYn) throws Exception;
+	public StringBuilder getQueryToStringNew(boolean bufferYn) throws Exception;
 
 }

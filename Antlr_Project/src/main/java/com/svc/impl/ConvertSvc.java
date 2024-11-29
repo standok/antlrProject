@@ -13,6 +13,7 @@ import com.svc.ICreateFileSvr;
 import com.svc.IParsingJavaSvr;
 import com.svc.IParsingSqlSvr;
 import com.util.Log;
+import com.util.LogManager;
 import com.util.StringUtil;
 import com.vo.JavaTokenInfoVo;
 import com.vo.SqlTokenInfoVo;
@@ -171,10 +172,14 @@ public class ConvertSvc implements IConvertSvc {
 		// 파싱한 정보를 가져온다.
 		List<List<SqlTokenInfoVo>> sqlConList = parsingSqlSvc.getSqlConList();
 
-		Log.printMethod("sqlConList.size()=>"+sqlConList.size());
+		LogManager.getLogger("debug").debug("sqlConList.size()=>"+sqlConList.size());
+
+		int indent = 0;
 
 		// SQL Parsing 처리
-		for(int i=0; i < sqlConList.size(); i++) {
+		for(int i = 0; i < sqlConList.size(); i++) {
+
+			if(i > 0) rtnStr.append("\n\n");
 
 			List<SqlTokenInfoVo> queryList = sqlConList.get(i);
 
@@ -182,17 +187,17 @@ public class ConvertSvc implements IConvertSvc {
 			parsingSqlSvc.parsingQuery(queryList);
 
 			// SQL파싱 Svc 호출
-			rtnStr.append(parsingSqlSvc.getQueryToString(false));
-
-//			parsingSqlSvc.printQueryTokenList();
-
+//			rtnStr.append(parsingSqlSvc.getQueryToString(false));
+			rtnStr.append(parsingSqlSvc.getQueryToStringNew(false));
 		}
 
-		if("JAVA".equals(filePath)) return rtnStr;
-
 		// 파일이 들어온경우 새로운 파일로 변환
-		if( ! StringUtil.isEmtpy(filePath)) {
-
+		if( ! StringUtil.isEmtpy(filePath) && !"JAVA".equals(filePath)) {
+			/**********************************
+			 * 새로운 Java 파일 생성
+			 **********************************/
+			ICreateFileSvr createFileSvr = new CreateFileSvr();
+			createFileSvr.createSqlFile(filePath, rtnStr);
 		}
 
 		Log.printMethod("[END]");

@@ -33,7 +33,8 @@ public class ConvertSourceMain {
 			if(fileName.toUpperCase().endsWith("DAO.JAVA")) {	// DAO만 조회
 				javaFileList.add(new File(filePath + fileName));
 			}
-			if(fileName.toUpperCase().endsWith(".SQL")) {
+			if(fileName.toUpperCase().endsWith(".SQL")
+				&& !fileName.toUpperCase().endsWith("_NEW.SQL")) {
 				sqlFileList.add(new File(filePath + fileName));
 			}
 		}
@@ -46,8 +47,7 @@ public class ConvertSourceMain {
 		Log.debug("============================================================");
 
 		// Java 파일 Parsing
-		for(int i=0; i<javaFileList.size(); i++) {
-			File file = javaFileList.get(i);
+		for(File file : javaFileList) {
 //			convertJavaSource(file);
 		}
 

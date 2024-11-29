@@ -217,7 +217,7 @@ public class ParsingJavaSvr implements IParsingJavaSvr {
 		Log.printMethod("[START]");
 
 		int lastLine = 1;	// 마지막줄
-		int depCnt = 0;		// 들여쓰기깊이
+		int indent = 0;		// 들여쓰기깊이
 		StringBuilder str = new StringBuilder();	// 소스내용
 		boolean startCharYn = false; 				//
 
@@ -230,9 +230,9 @@ public class ParsingJavaSvr implements IParsingJavaSvr {
 
 			// 들여쓰기 깊이 설정
 			if(tokenType == Java8Parser.LBRACE) {
-				depCnt++;
+				indent++;
 			} else if(tokenType == Java8Parser.RBRACE) {
-				depCnt--;
+				indent--;
 			}
 
 
@@ -244,7 +244,7 @@ public class ParsingJavaSvr implements IParsingJavaSvr {
 				}
 
 				// 들여쓰기
-				for(int d = 0; d < depCnt; d++) {
+				for(int d = 0; d < indent; d++) {
 					str.append("\t");
 				}
 

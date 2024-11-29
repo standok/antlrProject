@@ -1,16 +1,18 @@
 package com.svc.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.Vocabulary;
 
-import com.biz.TokenInfoBiz;
 import com.svc.IParsingSqlSvr;
 import com.util.DataManager;
 import com.util.Log;
@@ -26,12 +28,135 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 
 	private List<List<SqlTokenInfoVo>> sqlConList = null;
 	private List<SqlTokenInfoVo> queryTokenList = null;
+	private StringBuilder queryTokenListStr = null;
+	private String queryLastLineStr = null;
 
 	private PlSqlLexer lexer = null;
 	private PlSqlParser parser = null;
 
 	private int tokenIdx;
 	private int depLv;	// 쿼리 깊이
+
+	private final Set<Integer> DATA_TYPE = new HashSet<Integer>();
+	private final Set<Integer> ORA_FUNC = new HashSet<Integer>();
+	private final Set<Integer> BEGIN_CLAUSES = new HashSet<Integer>();
+	private final Set<Integer> END_CLAUSES = new HashSet<Integer>();
+	private final Set<Integer> LOGICAL = new HashSet<Integer>();
+	private final Set<Integer> QUANTIFIERS = new HashSet<Integer>();
+	private final Set<Integer> DML = new HashSet<Integer>();
+	private final Set<Integer> MISC = new HashSet<Integer>();
+
+	/**
+	 * 생성자에서 하는일
+	 * - 토큰 타입 정의 ( 펀드에 필요한것만 넣을것 )
+	 */
+	public ParsingSqlSvr() {
+
+		/*******************************
+		 * 데이터 타입
+		 *******************************/
+		DATA_TYPE.add(PlSqlParser.CHAR);
+		DATA_TYPE.add(PlSqlParser.NUMBER);
+		DATA_TYPE.add(PlSqlParser.VARCHAR);
+		DATA_TYPE.add(PlSqlParser.VARCHAR2);
+//		DATA_TYPE.add(PlSqlParser.NVARCHAR2);
+//		DATA_TYPE.add(PlSqlParser.NCHAR);
+//		DATA_TYPE.add(PlSqlParser.NVARCHAR);
+		DATA_TYPE.add(PlSqlParser.LONG);
+		DATA_TYPE.add(PlSqlParser.CLOB);
+//		DATA_TYPE.add(PlSqlParser.NCLOB);
+//		DATA_TYPE.add(PlSqlParser.BLOB);
+//		DATA_TYPE.add(PlSqlParser.BFILE);
+		DATA_TYPE.add(PlSqlParser.FLOAT);
+//		DATA_TYPE.add(PlSqlParser.BINARY_FLOAT);
+//		DATA_TYPE.add(PlSqlParser.BINARY_DOUBLE);
+		DATA_TYPE.add(PlSqlParser.DATE);
+		DATA_TYPE.add(PlSqlParser.TIMESTAMP);
+
+		/*******************************
+		 * 오라클 함수
+		 *******************************/
+		ORA_FUNC.add(PlSqlParser.TO_CHAR);
+		ORA_FUNC.add(PlSqlParser.TO_NUMBER);
+		ORA_FUNC.add(PlSqlParser.TO_DATE);
+		ORA_FUNC.add(PlSqlParser.TO_CLOB);
+
+		ORA_FUNC.add(PlSqlParser.MAX);
+		ORA_FUNC.add(PlSqlParser.MIN);
+		ORA_FUNC.add(PlSqlParser.AVG);
+		ORA_FUNC.add(PlSqlParser.SUM);
+		ORA_FUNC.add(PlSqlParser.MOD);
+		ORA_FUNC.add(PlSqlParser.COUNT);
+
+		ORA_FUNC.add(PlSqlParser.LOWER);
+		ORA_FUNC.add(PlSqlParser.UPPER);
+//		ORA_FUNC.add(PlSqlParser.INITCAP);
+		ORA_FUNC.add(PlSqlParser.CONCAT);
+		ORA_FUNC.add(PlSqlParser.SUBSTR);
+		ORA_FUNC.add(PlSqlParser.LENGTH);
+		ORA_FUNC.add(PlSqlParser.INSTR);
+		ORA_FUNC.add(PlSqlParser.LPAD);
+		ORA_FUNC.add(PlSqlParser.RPAD);
+		ORA_FUNC.add(PlSqlParser.TRIM);
+		ORA_FUNC.add(PlSqlParser.LTRIM);
+		ORA_FUNC.add(PlSqlParser.RTRIM);
+		ORA_FUNC.add(PlSqlParser.REPLACE);
+		ORA_FUNC.add(PlSqlParser.NVL);
+//		ORA_FUNC.add(PlSqlParser.NVL2);
+//		ORA_FUNC.add(PlSqlParser.NULLIF);
+//		ORA_FUNC.add(PlSqlParser.COALESCE);
+
+		ORA_FUNC.add(PlSqlParser.ABS);
+		ORA_FUNC.add(PlSqlParser.MOD);
+		ORA_FUNC.add(PlSqlParser.CEIL);
+		ORA_FUNC.add(PlSqlParser.FLOOR);
+		ORA_FUNC.add(PlSqlParser.ROUND);
+		ORA_FUNC.add(PlSqlParser.TRUNC);
+
+		ORA_FUNC.add(PlSqlParser.SYSDATE);
+//		ORA_FUNC.add(PlSqlParser.EXTRACT);
+		ORA_FUNC.add(PlSqlParser.MONTHS_BETWEEN);
+		ORA_FUNC.add(PlSqlParser.ADD_MONTHS);
+		ORA_FUNC.add(PlSqlParser.NEXT_DAY);
+		ORA_FUNC.add(PlSqlParser.LAST_DAY);
+
+		BEGIN_CLAUSES.add(PlSqlParser.LEFT);
+		BEGIN_CLAUSES.add(PlSqlParser.RIGHT);
+		BEGIN_CLAUSES.add(PlSqlParser.INNER);
+		BEGIN_CLAUSES.add(PlSqlParser.OUTER);
+		BEGIN_CLAUSES.add(PlSqlParser.GROUP);
+		BEGIN_CLAUSES.add(PlSqlParser.ORDER);
+
+		END_CLAUSES.add(PlSqlParser.WHERE);
+		END_CLAUSES.add(PlSqlParser.SET);
+		END_CLAUSES.add(PlSqlParser.HAVING);
+		END_CLAUSES.add(PlSqlParser.JOIN);
+		END_CLAUSES.add(PlSqlParser.FROM);
+		END_CLAUSES.add(PlSqlParser.BY);
+		END_CLAUSES.add(PlSqlParser.JOIN);
+		END_CLAUSES.add(PlSqlParser.INTO);
+		END_CLAUSES.add(PlSqlParser.UNION);
+
+		LOGICAL.add(PlSqlParser.AND);
+		LOGICAL.add(PlSqlParser.OR);
+		LOGICAL.add(PlSqlParser.WHEN);
+		LOGICAL.add(PlSqlParser.ELSE);
+		LOGICAL.add(PlSqlParser.END);
+
+		QUANTIFIERS.add(PlSqlParser.IN);
+		QUANTIFIERS.add(PlSqlParser.ALL);
+		QUANTIFIERS.add(PlSqlParser.EXISTS);
+		QUANTIFIERS.add(PlSqlParser.SOME);
+		QUANTIFIERS.add(PlSqlParser.ANY);
+
+		DML.add(PlSqlParser.INSERT);
+		DML.add(PlSqlParser.UPDATE);
+		DML.add(PlSqlParser.DELETE);
+		DML.add(PlSqlParser.MERGE);
+
+		MISC.add(PlSqlParser.SELECT);
+		MISC.add(PlSqlParser.ON);
+	}
 
 	@Override
 	public List<List<SqlTokenInfoVo>> getSqlConList() {
@@ -69,11 +194,12 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 
 		parser.data_manipulation_language_statements();
 
-		TokenInfoBiz tokenInfoBiz = new TokenInfoBiz();
-
 		List<SqlTokenInfoVo> list = new ArrayList<>();
 
 		Vocabulary vocabulary = parser.getVocabulary();
+
+		boolean convert = false;
+		int tokenIndent = 0;
 
 		// TokenStream -> sqlConList 변환
 		for(int i = 0; i<tokenStream.size(); i++) {
@@ -82,6 +208,24 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 			int tokenType = tokenStream.get(i).getType();
 			String symbolicName = vocabulary.getSymbolicName(tokenType);
 			int tokenLine = tokenStream.get(i).getLine();
+//			int startIndex = tokenStream.get(i).getCharPositionInLine();
+
+//			Log.debug(tokenName+"->"+startIndex);
+
+			if(tokenType == PlSqlParser.BEGIN) {
+				tokenIndent += 4;
+			}
+			if(tokenType == PlSqlParser.END) {
+				tokenIndent -= 4;
+			}
+
+			if(DML.contains(tokenType) || (!convert && tokenType == PlSqlParser.SELECT)) {
+				if(list.size() > 0) {
+					sqlConList.add(list);
+					list = new ArrayList<>();
+				}
+				convert = true;
+			}
 
 			SqlTokenInfoVo sqlTokenInfoVo = new SqlTokenInfoVo();
 			sqlTokenInfoVo.setTokenIndex(tokenIndex);
@@ -91,17 +235,21 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 			sqlTokenInfoVo.setTokenLine(tokenLine);
 			sqlTokenInfoVo.setAliasName("");
 			sqlTokenInfoVo.setTableId("");
+			sqlTokenInfoVo.setConvert(convert);
+			sqlTokenInfoVo.setTokenIndent(tokenIndent);
 
 			list.add(sqlTokenInfoVo);
 
-			if(tokenType == PlSqlParser.SEMICOLON) {
+			if(convert && tokenType == PlSqlParser.SEMICOLON) {
 				Log.printInfomation(lexer, parser, list);
 
 				sqlConList.add(list);
-
 				list = new ArrayList<>();
+				convert = false;
 			}
 		}
+
+		if(list.size() > 0) sqlConList.add(list);
 
 		Log.printMethod("[END]");
 	}
@@ -120,46 +268,62 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 
 		// parsing query set
 		queryTokenList = tokenList;
+		queryTokenListStr = new StringBuilder();
+		queryLastLineStr = "";
+
+		// 전환대상 확인
+		if(tokenList != null && !tokenList.get(0).isConvert()) {
+			return;
+		}
 
 		// parsing variable Initialization
 		tokenIdx = 0;
 		depLv = 0;
 
+		// query에 수정할 데이터가 있는지 확인
+		boolean queryModifyYn = false;
+
 		// SQL로 부터 테이블 데이터 분류 시작
 		for(; tokenIdx < queryTokenList.size(); tokenIdx++) {
 			String tokenName = queryTokenList.get(tokenIdx).getTokenName();
 			int tokenType = queryTokenList.get(tokenIdx).getTokenType();
+			String symbolicName = queryTokenList.get(tokenIdx).getSymbolicName();
 
 			LogManager.getLogger("debug").debug("Token 데이터 분류 정보["+depLv+"]["+tokenIdx+"]["+tokenName+"]["+tokenType+"]");
 
 			if (tokenType == PlSqlParser.SELECT) {
+				queryModifyYn = true;
 				parsingSelectSQL();
 			} else if (tokenType == PlSqlParser.UPDATE) {
+				queryModifyYn = true;
 				parsingUpdateSQL();
 			} else if (tokenType == PlSqlParser.DELETE) {
+				queryModifyYn = true;
 				parsingDeleteSQL();
 			} else if (tokenType == PlSqlParser.INSERT) {
+				queryModifyYn = true;
 				parsingInsertSQL();
 //			} else if (tokenType == PlSqlParser.WITH) {
 //				parsingWithAsSQL();
 			} else {
-
+				Log.debug("미정의데이터==>["+symbolicName+"]");
 			}
 		}
 
 		// 새로운 테이블로 데이터 일괄 변경
-		changeQueryTokenData();
+		if(queryModifyYn) modifyQueryTokenData();
 
 		Log.printMethod("[END]");
 	}
 
-	private void changeQueryTokenData() throws Exception {
+	private void modifyQueryTokenData() throws Exception {
 
 		Log.printMethod("[START]");
 
 		// queryTokenList new 컬럼, 테이블로 변경
 		for(SqlTokenInfoVo tmp : queryTokenList) {
 			if("Col".equals(tmp.getRolePosition())) {
+				LogManager.getLogger("debug").debug("[Col]=>["+tmp.getTableId()+","+tmp.getTokenName()+"]");;
 				if( !StringUtil.isEmtpy(tmp.getTableId()) && !StringUtil.isEmtpy(tmp.getTokenName())) {
 					String newColumnId = DataManager.getNewColumnId(tmp.getTableId(), tmp.getTokenName());
 					if(!StringUtil.isEmtpy(newColumnId))  tmp.setTokenName(newColumnId);
@@ -168,6 +332,7 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 					tmp.setTokenName(tmp.getTokenName()+"(없음)");
 				}
 			} else if("Tab".equals(tmp.getRolePosition())) {
+				LogManager.getLogger("debug").debug("[Tab]=>["+tmp.getTableId()+","+tmp.getTokenName()+"]");
 				if( !StringUtil.isEmtpy(tmp.getTokenName())) {
 					String newTableId = DataManager.getNewTableId(tmp.getTokenName());
 					if(!StringUtil.isEmtpy(newTableId)) tmp.setTokenName(newTableId);
@@ -197,6 +362,7 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 		tokenIdx++;
 
 		int startTokenIdx = tokenIdx;
+		int startDepLv = depLv;
 
 		Map<String, String> tableMap = new LinkedHashMap<>();
 
@@ -212,19 +378,27 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 				depLv++;
 				continue;
 			} else if(tokenType == PlSqlParser.RIGHT_PAREN) {
-				LogManager.getLogger("debug").debug(logStr);
-				depLv--;
-				continue;
+				if(startDepLv == depLv) {
+					tokenIdx--;
+					LogManager.getLogger("debug").debug(logStr+"< Select 종료 >");
+					break;	// where 진입 초기 깊이랑 같아지면 종료
+				} else {
+					LogManager.getLogger("debug").debug(logStr);
+					depLv--;
+					continue;
+				}
 			}
 
 			// TODO: Select 오류 토큰 확인 (테스트하면서 추가)
 			if(tokenType == PlSqlParser.UPDATE
 					||tokenType == PlSqlParser.DELETE
 					||tokenType == PlSqlParser.INSERT
-					||tokenType == PlSqlParser.SET
-					//||tokenType == PlSqlParser.INTO
-					||tokenType == PlSqlParser.SEMICOLON) {
+					||tokenType == PlSqlParser.SET) {
 				throw new Exception("무효한 토큰값이 들어옴");
+			} else if (tokenType == PlSqlParser.SEMICOLON) {	// Select 종료 토큰
+				tokenIdx--;
+				LogManager.getLogger("debug").debug(logStr+"< Select 종료 >");
+				break;
 			} else if (tokenType == PlSqlParser.COMMA
 					||tokenType == PlSqlParser.PERIOD
 					||queryTokenList.get(tokenIdx+1).getTokenType() == PlSqlParser.PERIOD) {
@@ -240,7 +414,7 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 				tableMap = parsingFromSQL();
 			} else if (tokenType == PlSqlParser.WHERE) {
 				parsingWhereSQL();
-				break;	// TODO : 이걸 지워도 되지 않을까?
+//				break;	// TODO : 이걸 지워도 되지 않을까?
 			} else if (tokenType == PlSqlParser.REGULAR_ID) {
 
 				if(queryTokenList.get(tokenIdx-1).getTokenType() == PlSqlParser.RIGHT_PAREN
@@ -293,17 +467,13 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 
 		tokenIdx++;
 
+		int startDepLv = depLv;
+
 		Map<String, String> tableMap = new LinkedHashMap<>();
 
 		for(; tokenIdx < queryTokenList.size(); tokenIdx++) {
 			String tokenName = queryTokenList.get(tokenIdx).getTokenName();
 			int tokenType = queryTokenList.get(tokenIdx).getTokenType();
-
-			// FROM -> WHERE 종료 토큰
-			if (tokenType == PlSqlParser.WHERE) {
-				tokenIdx--;
-				break;
-			}
 
 			String logStr = "Token 데이터 분류 정보["+depLv+"]["+tokenIdx+"]["+tokenName+"]["+tokenType+"]";
 
@@ -313,9 +483,15 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 				depLv++;
 				continue;
 			} else if(tokenType == PlSqlParser.RIGHT_PAREN) {
-				LogManager.getLogger("debug").debug(logStr);
-				depLv--;
-				continue;
+				if(startDepLv == depLv) {
+					tokenIdx--;
+					LogManager.getLogger("debug").debug(logStr+"< From 종료 >");
+					break;	// where 진입 초기 깊이랑 같아지면 종료
+				} else {
+					LogManager.getLogger("debug").debug(logStr);
+					depLv--;
+					continue;
+				}
 			}
 
 			// TODO: From 오류 토큰 확인 (테스트하면서 추가)
@@ -323,9 +499,15 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 					||tokenType == PlSqlParser.DELETE
 					||tokenType == PlSqlParser.INSERT
 					||tokenType == PlSqlParser.SET
-					||tokenType == PlSqlParser.INTO
-					||tokenType == PlSqlParser.SEMICOLON) {
+					||tokenType == PlSqlParser.INTO) {
 				throw new Exception("무효한 토큰값이 들어옴");
+			} else if (tokenType == PlSqlParser.GROUP
+				   ||tokenType == PlSqlParser.ORDER
+				   ||tokenType == PlSqlParser.WHERE
+				   ||tokenType == PlSqlParser.SEMICOLON) {	// FROM 종료 토큰
+				tokenIdx--;
+				LogManager.getLogger("debug").debug(logStr+"< From 종료 >");
+				break;
 			} else if (tokenType == PlSqlParser.COMMENT
 					||tokenType == PlSqlParser.SINGLE_LINE_COMMENT
 					||tokenType == PlSqlParser.MULTI_LINE_COMMENT
@@ -336,6 +518,12 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 			} else if (tokenType == PlSqlParser.SELECT) {
 				parsingSelectSQL();
 			} else {
+				// 임시테이블 제외
+				if("DUAL".equals(tokenName)) {
+					LogManager.getLogger("debug").debug(logStr);
+					continue;
+				}
+
 				if(queryTokenList.get(tokenIdx+1).getTokenType() == PlSqlParser.REGULAR_ID) {
 					tableMap.put(queryTokenList.get(tokenIdx+1).getTokenName(), tokenName);
 					queryTokenList.get(tokenIdx).setAliasName(queryTokenList.get(tokenIdx+1).getTokenName());
@@ -381,23 +569,21 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 			int tokenType = queryTokenList.get(tokenIdx).getTokenType();
 			String logStr = "Token 데이터 분류 정보["+depLv+"]["+tokenIdx+"]["+tokenName+"]["+tokenType+"]";
 
-			// WHERE 종료 토큰
-			if (tokenType == PlSqlParser.SEMICOLON) {
-				LogManager.getLogger("debug").debug(logStr+"<종료>");
-				break;
-			}
-
 			// query depth level
 			if(tokenType == PlSqlParser.LEFT_PAREN) {
 				LogManager.getLogger("debug").debug(logStr);
 				depLv++;
 				continue;
 			} else if(tokenType == PlSqlParser.RIGHT_PAREN) {
-				LogManager.getLogger("debug").debug(logStr);
-				depLv--;
-				if(startDepLv == depLv+1) {
+				if(startDepLv == depLv) {
+					tokenIdx--;
+					LogManager.getLogger("debug").debug(logStr+"< Where 종료 >");
 					break;	// where 진입 초기 깊이랑 같아지면 종료
-				} else continue;
+				} else {
+					LogManager.getLogger("debug").debug(logStr);
+					depLv--;
+					continue;
+				}
 			}
 
 			// TODO: Where 오류 토큰 확인 (테스트하면서 추가)
@@ -405,9 +591,14 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 					||tokenType == PlSqlParser.DELETE
 					||tokenType == PlSqlParser.INSERT
 					||tokenType == PlSqlParser.SET
-					||tokenType == PlSqlParser.INTO
-					) {
+					||tokenType == PlSqlParser.INTO) {
 				throw new Exception("무효한 토큰값이 들어옴");
+			} else if (tokenType == PlSqlParser.GROUP
+				   ||tokenType == PlSqlParser.ORDER
+				   ||tokenType == PlSqlParser.SEMICOLON) { // WHERE 종료 토큰
+				tokenIdx--;
+				LogManager.getLogger("debug").debug(logStr+"< Where 종료 >");
+				break;
 			} else if (tokenType == PlSqlParser.SELECT) {
 				parsingSelectSQL();
 			} else if (tokenType == PlSqlParser.COMMA
@@ -481,8 +672,7 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 
 			// TODO: Update 오류 토큰 확인 (테스트하면서 추가)
 			if(tokenType == PlSqlParser.DELETE
-				||tokenType == PlSqlParser.INSERT
-				||tokenType == PlSqlParser.SEMICOLON) {
+				||tokenType == PlSqlParser.INSERT) {
 				throw new Exception("무효한 토큰값이 들어옴");
 			} else if (tokenType == PlSqlParser.COMMA
 					||tokenType == PlSqlParser.PERIOD
@@ -560,9 +750,7 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 				||tokenType == PlSqlParser.DELETE
 				||tokenType == PlSqlParser.INSERT
 				||tokenType == PlSqlParser.SET
-				||tokenType == PlSqlParser.INTO
-				||tokenType == PlSqlParser.SEMICOLON
-				) {
+				||tokenType == PlSqlParser.INTO) {
 				throw new Exception("무효한 토큰값이 들어옴");
 			} else if (tokenType == PlSqlParser.SELECT) {
 				parsingSelectSQL();
@@ -622,8 +810,7 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 //					||tokenType == PlSqlParser.DELETE
 					||tokenType == PlSqlParser.INSERT
 					||tokenType == PlSqlParser.SET
-					||tokenType == PlSqlParser.INTO
-					||tokenType == PlSqlParser.SEMICOLON) {
+					||tokenType == PlSqlParser.INTO) {
 				throw new Exception("무효한 토큰값이 들어옴");
 			} else if (tokenType == PlSqlParser.COMMA
 					||tokenType == PlSqlParser.PERIOD
@@ -734,165 +921,13 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 
 	}
 
-	/**
-	 * 설명 : queryTokenList를 String으로 변환
-	 *
-	 * @param boolean bufferYn
-	 * @return StringBuilder
-	 * @throws Exception, IOException
-	 */
-	@Override
-	public StringBuilder getQueryToString(boolean bufferYn) throws Exception {
-
-		Log.printMethod("[START]");
-
-		int lastLine = 1;		// 마지막줄
-		int depCnt = 0;			// 들여쓰기깊이
-		String spaceStr = "";	// 공백
-		StringBuilder str = new StringBuilder();	// 소스내용
-
-		if(bufferYn) str.append("\"");
-
-		LogManager.getLogger("debug").debug("queryTokenList 확인 =============================");
-
-		for(int i = 0; i < queryTokenList.size(); i++) {
-
-			String tokenName = queryTokenList.get(i).getTokenName();
-			int tokenType = queryTokenList.get(i).getTokenType();
-			String symbolicName = queryTokenList.get(i).getSymbolicName();
-			int tokenLine = queryTokenList.get(i).getTokenLine();
-
-			// TODO : tokenName 줄바꿈 지우기 (수정해야할려나?)
-			tokenName = tokenName.replace("\n", "");
-
-			// 들여쓰기 깊이 설정
-			if(tokenType == PlSqlParser.LEFT_PAREN) {
-				depCnt++;
-			} else if(tokenType == PlSqlParser.RIGHT_PAREN) {
-				depCnt--;
-			}
-
-			if(depCnt == 0) {
-				if(tokenType == PlSqlParser.SELECT) {
-					spaceStr = "     ";
-				}
-				if(tokenType == PlSqlParser.FROM) {
-//					spaceStr = "  ";
-					spaceStr = " ";
-				}
-				if(tokenType == PlSqlParser.WHERE) {
-					spaceStr = " ";
-				}
-				if(tokenType == PlSqlParser.AND) {
-					spaceStr = "   ";
-				}
-				if(tokenType == PlSqlParser.SET) {
-					spaceStr = "   ";
-				}
-				if(tokenType == PlSqlParser.INTO) {
-					spaceStr = "  ";
-				}
-				if(tokenType == PlSqlParser.SEMICOLON) {
-					spaceStr = "";
-				}
-			} else {
-				spaceStr = "";
-			}
-
-			LogManager.getLogger("debug").debug("[Token]["+i+"]==>"
-					+"["+tokenName+"]"
-					+"["+symbolicName+"]"
-					+"["+lastLine+"]"
-					+"["+tokenLine+"]"
-					+"["+countLines(tokenName)+"]"
-			 );
-
-			if(tokenLine - lastLine > 0) {
-
-				if(bufferYn) str.append("\"");
-
-				// 줄바꿈
-				for(int s = 0; s < tokenLine - lastLine; s++) {
-					str.append("\n");
-				}
-
-				// 문장앞 공백 추가
-				str.append(spaceStr);
-
-				lastLine = tokenLine + countLines(tokenName) -1;
-			}
-
-			/*****************************************
-			 * 앞/뒤 공백 입력
-			 * TODO: 테스트하면서 추가
-			 *****************************************/
-			// 앞 공백
-			if(tokenType == PlSqlParser.SINGLE_LINE_COMMENT) {
-				if((i-1) >= 0 && queryTokenList.get(i-1).getTokenType() == PlSqlParser.REGULAR_ID) {
-					str.append(" ");
-				}
-				str.append(tokenName);
-			}
-			// 뒤 공백
-			else if(tokenType == PlSqlParser.SELECT
-					|| tokenType == PlSqlParser.UPDATE
-					|| tokenType == PlSqlParser.DELETE
-					|| tokenType == PlSqlParser.INSERT
-					|| tokenType == PlSqlParser.WITH
-					|| tokenType == PlSqlParser.AS
-					|| tokenType == PlSqlParser.SET
-					|| tokenType == PlSqlParser.COMMA
-					|| tokenType == PlSqlParser.RIGHT_PAREN
-					|| tokenType == PlSqlParser.FROM
-					|| tokenType == PlSqlParser.WHERE
-					|| tokenType == PlSqlParser.EQUALS_OP
-					|| tokenType == PlSqlParser.AND
-					|| tokenType == PlSqlParser.NOT
-					|| tokenType == PlSqlParser.IN
-					|| tokenType == PlSqlParser.INTO
-					|| tokenType == PlSqlParser.DECLARE
-					|| tokenType == PlSqlParser.BEGIN
-					|| tokenType == PlSqlParser.END
-//					|| tokenType == PlSqlParser.NEW
-				) {
-				// 앞뒤 공백
-				if(tokenType != PlSqlParser.COMMA
-				   && tokenType != PlSqlParser.RIGHT_PAREN
-					) {
-					if((i-1) >= 0 && queryTokenList.get(i-1).getTokenType() == PlSqlParser.REGULAR_ID) {
-						str.append(" ");
-					}
-				}
-				str.append(tokenName + " ");
-			} else if(tokenType == PlSqlParser.EOF) {
-				// Skip
-			} else if(tokenType == PlSqlParser.REGULAR_ID) {
-				if(queryTokenList.size() != (i+1)
-				   && queryTokenList.get(i+1).getTokenType() == PlSqlParser.REGULAR_ID) {
-					str.append(tokenName + " ");
-				} else if((i-1) > 0
-						   && queryTokenList.get(i-1).getTokenType() == PlSqlParser.CHAR_STRING) {
-					str.append(" " + tokenName);
-				} else {
-					str.append(tokenName);
-				}
-			} else {
-				str.append(tokenName);
-			}
-		}
-//		LogManager.getLogger("debug").debug("<결과값확인> =============================");
-//		LogManager.getLogger("debug").debug("\n"+str.toString());
-
-		Log.printMethod("[END]");
-		return str;
-	}
 
 	private void setTokenTableId(int startTokenIdx, Map<String, String> tableMap) throws Exception {
 
 //		LogManager.getLogger("debug").debug("==tableMap==");
 //		Log.logMapToString(tableMap);
 
-		LogManager.getLogger("debug").debug("Column에 Table명 세팅["+startTokenIdx+"] ~ ["+tokenIdx+"]");
+//		LogManager.getLogger("debug").debug("Column에 Table명 세팅["+startTokenIdx+"] ~ ["+tokenIdx+"]");
 
 		// token에 테이블 정보 입력하기
 		for(int i = startTokenIdx; i <= tokenIdx; i++) {
@@ -950,6 +985,478 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 		}
 	}
 
+	/**
+	 * 설명 : queryTokenList를 String으로 변환
+	 *
+	 * @param boolean bufferYn
+	 * @return StringBuilder
+	 * @throws Exception, IOException
+	 */
+	@Override
+	public StringBuilder getQueryToString(boolean bufferYn) throws Exception {
+
+		Log.printMethod("[START]");
+
+		int secondBfTokenType = 0;	// 전전 토큰
+		int firstBfTokenType = 0;	// 전 토큰타입
+		String firstBfTokenName = "";	// 전 토큰명
+
+		int lastLine = 0;		// 마지막줄
+
+		boolean beginLine = true;
+
+		StringBuilder str = new StringBuilder();	// 소스내용
+
+		if(bufferYn) str.append("\"");
+
+		LogManager.getLogger("debug").debug("queryTokenList 확인 =============================");
+
+		for(int i = 0; i < queryTokenList.size(); i++) {
+
+			String tokenName = queryTokenList.get(i).getTokenName();
+			int tokenType = queryTokenList.get(i).getTokenType();
+			String symbolicName = queryTokenList.get(i).getSymbolicName();
+			int tokenLine = queryTokenList.get(i).getTokenLine();
+
+			// 최종라인 세팅
+			if( i == 0 ) lastLine = tokenLine - 1;
+
+			LogManager.getLogger("debug").debug("[Token]["+i+"]==>"
+					+"["+tokenName+"]"
+					+"["+symbolicName+"]"
+					+"["+lastLine+"]"
+					+"["+tokenLine+"]"
+					+"["+countLines(tokenName)+"]"
+			 );
+
+			// 줄바꿈과 문장 앞 공백 추가
+			if(tokenLine - lastLine > 0) {
+
+				if(bufferYn) str.append("\"");
+
+				// 줄바꿈
+				for(int s = 0; s < tokenLine - lastLine; s++) {
+					str.append("\n");
+				}
+
+				lastLine = tokenLine + countLines(tokenName) -1;
+				beginLine = true;
+			}
+
+			/*****************************************
+			 * 앞/뒤 공백 입력
+			 * TODO: 테스트하면서 추가
+			 *****************************************/
+			// 앞 공백
+			if(tokenType == PlSqlParser.SINGLE_LINE_COMMENT) {
+//				if((i-1) >= 0 && queryTokenList.get(i-1).getTokenType() == PlSqlParser.REGULAR_ID) {
+//				if(!beginLine) {
+//					str.append(" ");
+//				}
+
+				// 싱글 라인 코멘트일경우 줄바꿈문자 제거
+				str.append(tokenName.replace("\n", ""));
+
+//			} else if(tokenType == PlSqlParser.MULTI_LINE_COMMENT) {
+
+			} else if(tokenType == PlSqlParser.EOF) {
+				// Skip
+			} else if(tokenType == PlSqlParser.REGULAR_ID) {
+				if(firstBfTokenType == PlSqlParser.REGULAR_ID
+					||firstBfTokenType == PlSqlParser.RIGHT_PAREN
+					){
+					str.append(" ");
+				}
+				str.append(tokenName);
+			} else {
+				// 앞 공백
+				if(tokenType == PlSqlParser.COMMA
+					|| tokenType == PlSqlParser.PERIOD
+					|| tokenType == PlSqlParser.RIGHT_PAREN
+					|| tokenType == PlSqlParser.CHAR_STRING) {
+					// 추가안함
+				} else {
+					if(firstBfTokenType == PlSqlParser.REGULAR_ID) {
+						str.append(" ");
+					}
+				}
+
+				// 입력 + 뒷 공백
+				if(tokenType == PlSqlParser.LEFT_PAREN
+					||tokenType == PlSqlParser.RIGHT_PAREN
+					||tokenType == PlSqlParser.UNSIGNED_INTEGER
+					||tokenType == PlSqlParser.PERIOD
+					||tokenType == PlSqlParser.SEMICOLON) {
+					str.append(tokenName);
+				} else if(DATA_TYPE.contains(tokenType)
+						||ORA_FUNC.contains(tokenType)) {
+					str.append(tokenName);
+					if(tokenType == PlSqlParser.NUMBER
+					  ||tokenType == PlSqlParser.REPLACE) str.append(" ");
+				} else {
+					str.append(tokenName + " ");
+				}
+			}
+
+			// 다음작업을 위한 변수 세팅
+			firstBfTokenName = tokenName;
+			firstBfTokenType = tokenType;
+			secondBfTokenType = firstBfTokenType;
+			beginLine = false;
+		}
+//		LogManager.getLogger("debug").debug("<결과값확인> =============================");
+//		LogManager.getLogger("debug").debug("\n"+str.toString());
+
+		Log.printMethod("[END]");
+		return str;
+	}
+
+	/**
+	 * 설명 : queryTokenList를 String으로 변환
+	 *
+	 * @param boolean bufferYn
+	 * @return StringBuilder
+	 * @throws Exception, IOException
+	 */
+	@Override
+	public StringBuilder getQueryToStringNew(boolean bufferYn) throws Exception {
+
+		Log.printMethod("[START]");
+
+//		boolean afterBeginBeforeEnd = false;
+//		boolean afterOn = false;
+		boolean afterBetween = false;
+
+//		int inFunction = 0;
+
+		int indentCnt = 0;
+		int paragraphCnt = 0;				// 구문
+		boolean afterByOrSetOrFromOrSelect = false;
+		LinkedList<Integer> indentCntList = new LinkedList<Integer>();
+		LinkedList<Integer> paragraphCntList = new LinkedList<Integer>();
+		LinkedList<Boolean> afterByOrFromOrSelectList = new LinkedList<Boolean>();
+
+		int parensSinceSelect = 0;		// select문 확인
+
+//		int secondBfTokenType = 0;		// 전전 토큰
+		int firstBfTokenType = 0;		// 전 토큰타입
+		String firstBfTokenName = "";	// 전 토큰명
+
+		int lastLine = 1;			// 마지막 줄
+
+		// 초기화
+		queryTokenListStr = new StringBuilder();
+		queryLastLineStr = "";
+
+		if(bufferYn) out("\"");
+
+		LogManager.getLogger("debug").debug("queryTokenList 확인 =============================");
+
+		for(int i = 0; i < queryTokenList.size(); i++) {
+
+			String tokenName = queryTokenList.get(i).getTokenName();
+			int tokenType = queryTokenList.get(i).getTokenType();
+			String symbolicName = queryTokenList.get(i).getSymbolicName();
+			int tokenLine = queryTokenList.get(i).getTokenLine();
+			int tokenIndent = queryTokenList.get(i).getTokenIndent();
+
+			// 최종라인 세팅
+			if( i == 0 ) lastLine = tokenLine;
+
+			LogManager.getLogger("debug").debug("[Token]["+i+"]==>"
+					+"["+tokenName+"]"
+					+"["+symbolicName+"]"
+					+"["+lastLine+"]"
+					+"["+tokenLine+"]"
+					+"["+countLines(tokenName)+"]"
+			 );
+
+			/**************************************
+			 * 줄바꿈과 문장 앞 공백 추가
+			 **************************************/
+			if(tokenLine - lastLine > 0) {
+
+				if(bufferYn) out("\"");
+
+				// 줄바꿈
+				for(int s = 0; s < tokenLine - lastLine; s++) {
+					out("\n");
+				}
+
+				// 문장앞 공백 추가
+				int totalIndent = tokenIndent + indentCnt;
+
+				// 줄바꿈일때만 키워드 공백 추가
+				if(tokenType == PlSqlParser.COMMA
+					|| tokenType == PlSqlParser.REGULAR_ID) {
+					totalIndent += (6 - paragraphCnt > 0? 6 - paragraphCnt : 0);
+				} else if(tokenType == PlSqlParser.BEGIN || tokenType == PlSqlParser.END) {
+
+				} else {
+					totalIndent += (6 - countStr(tokenName) > 0? 6 - countStr(tokenName) : 0);
+				}
+
+//				/out(indentCnt+"/"+paragraphCnt+"/"+totalIndent);
+
+				for(int s = 0; s < totalIndent; s++) {
+					out(" ");
+				}
+
+				lastLine = tokenLine + countLines(tokenName) -1;
+			}
+
+			/**************************************
+			 * Query 분류 작업
+			 **************************************/
+//			if ( afterByOrSetOrFromOrSelect && tokenType == PlSqlParser.COMMA) {
+//				out(tokenName, false);
+//			}
+
+//			else if ( afterOn && tokenType == PlSqlParser.COMMA ) {
+//				out(tokenName).append(" ");
+//				indentCnt--;
+//				newline();
+//				afterOn = false;
+//				afterByOrSetOrFromOrSelect = true;
+//			}
+//
+//			else
+			if(tokenType == PlSqlParser.LEFT_PAREN) {
+
+				out(tokenName);
+
+//				if ( isFunctionName( firstBfTokenName )
+//					|| inFunction > 0
+//					) {
+//					inFunction++;
+//				} else {
+					// 기존 구문 저장
+					indentCntList.addLast( indentCnt );
+					paragraphCntList.addLast( paragraphCnt );
+					afterByOrFromOrSelectList.addLast( afterByOrSetOrFromOrSelect );
+					parensSinceSelect++;
+//				}
+			}
+
+			else if(tokenType == PlSqlParser.RIGHT_PAREN) {
+
+				if ( parensSinceSelect > 0 ) {
+					parensSinceSelect--;
+					indentCnt = indentCntList.removeLast();
+					paragraphCnt = paragraphCntList.removeLast();
+					afterByOrSetOrFromOrSelect = afterByOrFromOrSelectList.removeLast();
+				}
+
+//				if ( inFunction > 0 ) {
+//					inFunction--;
+//				}
+//				else {
+//					if ( !afterByOrSetOrFromOrSelect ) {
+//						indentCnt--;
+//						newline();
+//					}
+//				}
+				out(tokenName);
+			}
+
+			else if ( BEGIN_CLAUSES.contains( tokenType ) ) {
+//				if ( !afterBeginBeforeEnd ) {
+//					if ( afterOn ) {
+//						indentCnt--;
+//						afterOn = false;
+//					}
+//					indentCnt--;
+//					newline();
+//				}
+				out(tokenName, false);
+
+//				afterBeginBeforeEnd = true;
+			}
+
+			else if ( END_CLAUSES.contains( tokenType ) ) {
+//				if ( !afterBeginBeforeEnd ) {
+//					indentCnt--;
+//					if ( afterOn ) {
+//						indentCnt--;
+//						afterOn = false;
+//					}
+//					newline();
+//				}
+				out(tokenName, false);;
+//				if (tokenType != PlSqlParser.UNION) {
+//					indentCnt++;
+//				}
+//				newline();
+//				afterBeginBeforeEnd = false;
+				afterByOrSetOrFromOrSelect = tokenType == PlSqlParser.BY
+									|| tokenType == PlSqlParser.SET
+									|| tokenType == PlSqlParser.FROM;
+			}
+
+			else if (tokenType == PlSqlParser.SELECT) {
+
+				out(tokenName, false);
+
+				indentCnt = countStr(queryLastLineStr);
+				paragraphCnt = countStr(tokenName);
+				afterByOrSetOrFromOrSelect = true;
+			}
+
+			else if ( DML.contains( tokenType ) ) {
+				out(tokenName, false);
+				paragraphCnt = countStr(tokenName);
+			}
+
+			else if (tokenType == PlSqlParser.ON) {
+				out(tokenName, false);
+//				afterOn = true;
+			}
+
+			else if (afterBetween && tokenType == PlSqlParser.AND) {
+				out(tokenName, false);
+				afterBetween = false;
+			}
+
+			else if ( LOGICAL.contains( tokenType ) ) {
+				out(tokenName, false);
+//				paragraphCnt = countStr(tokenName);
+			}
+
+			else if (tokenType == PlSqlParser.CREATE) {
+				out(tokenName, false);
+				paragraphCnt = countStr(tokenName);
+			}
+
+			// 앞 공백
+			else if(tokenType == PlSqlParser.SINGLE_LINE_COMMENT) {
+//				if((i-1) >= 0 && queryTokenList.get(i-1).getTokenType() == PlSqlParser.REGULAR_ID) {
+//				if(!beginLine) out(" ");
+//				if(indentCnt != 0) out(" ");
+
+				// 싱글 라인 코멘트일경우 줄바꿈문자 제거
+				out(tokenName.replace("\n", ""));
+			}
+
+			else if(tokenType == PlSqlParser.EOF) {
+				// Skip
+			}
+
+			else if(tokenType == PlSqlParser.REGULAR_ID) {
+				if(firstBfTokenType == PlSqlParser.RIGHT_PAREN) {
+					out(" ");
+				}
+				if( i+1 < queryTokenList.size()) {
+					if(queryTokenList.get(i+1).getTokenType() == PlSqlParser.PERIOD
+						||queryTokenList.get(i+1).getTokenType() == PlSqlParser.COMMA
+						||queryTokenList.get(i+1).getTokenType() == PlSqlParser.RIGHT_PAREN
+						||queryTokenList.get(i+1).getTokenType() == PlSqlParser.SEMICOLON) {
+						out(tokenName);
+					} else {
+						out(tokenName, false);
+					}
+				} else {
+					out(tokenName, false);
+				}
+			}
+			// 그 외
+			else {
+				if (tokenType == PlSqlParser.BETWEEN) {
+					afterBetween = true;
+				}
+//				else if (tokenType == PlSqlParser.CASE) {
+//					indentCnt++;
+//				}
+
+				// 앞 공백 ================================================
+//				if(tokenType == PlSqlParser.COMMA
+//					|| tokenType == PlSqlParser.PERIOD
+//					|| tokenType == PlSqlParser.RIGHT_PAREN
+//					|| tokenType == PlSqlParser.CHAR_STRING) {
+//					// 추가안함
+//				} else {
+//					if(firstBfTokenType == PlSqlParser.REGULAR_ID) {
+//						out(" ");
+//					}
+//				}
+
+				// 입력 ==================================================
+				out(tokenName);
+
+				// 뒷 공백 ================================================
+				if(tokenType == PlSqlParser.LEFT_PAREN
+					||tokenType == PlSqlParser.RIGHT_PAREN
+					||tokenType == PlSqlParser.UNSIGNED_INTEGER
+					||tokenType == PlSqlParser.PERIOD
+					||tokenType == PlSqlParser.CHAR_STRING
+					||tokenType == PlSqlParser.SEMICOLON
+					) {
+
+				} else if(DATA_TYPE.contains(tokenType)
+						||ORA_FUNC.contains(tokenType)) {
+
+					// NUMBER :=
+					if(tokenType == PlSqlParser.NUMBER) out(" ");
+
+				} else {
+					out(" ");
+				}
+			}
+
+			// whitespace 추가(위에추가)
+//			if(tokenType != PlSqlParser.PERIOD) {
+//				out(" ");
+//			}
+
+			// 다음작업을 위한 변수 세팅
+			firstBfTokenName = tokenName;
+			firstBfTokenType = tokenType;
+//			secondBfTokenType = firstBfTokenType;
+
+			LogManager.getLogger("debug").debug("[tokenName]:["+tokenName+"]"
+					   +"[queryLastLineStr]:["+queryLastLineStr+"]"
+				       +"[indentCnt]:["+indentCnt+"]"
+				       +"[parensSinceSelect]:["+parensSinceSelect+"]"
+					   );
+		}
+
+//		Log.printMethod("<결과값확인> =============================");
+//		Log.printMethod("\n"+queryTokenListStr.toString());
+
+		Log.printMethod("[END]");
+		return queryTokenListStr;
+	}
+
+	private void out(String str) throws Exception {
+		queryTokenListStr.append(str);
+		if("\n".equals(str)) {
+			queryLastLineStr = "";
+		} else {
+			queryLastLineStr += str;
+		}
+	}
+
+	private void out(String str, boolean isLeft) throws Exception {
+		if(isLeft) {
+			out(" ");
+			out(str);
+		} else {
+			out(str);
+			out(" ");
+		}
+
+	}
+
+	private boolean isFunctionName(String tok) {
+		final char begin = tok.charAt( 0 );
+		final boolean isIdentifier = Character.isJavaIdentifierStart( begin ) || '"' == begin;
+		return isIdentifier &&
+				!LOGICAL.contains( tok ) &&
+				!END_CLAUSES.contains( tok ) &&
+				!QUANTIFIERS.contains( tok ) &&
+				!DML.contains( tok ) &&
+				!MISC.contains( tok );
+	}
+
 	private boolean isHint(String tokenName) {
 		if(tokenName.indexOf("/*+") > 0) {
 			// 펀드시스템에서 사용안하는 Hint는 주석
@@ -959,6 +1466,7 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 //				||tokenName.indexOf("CHOOSE") > 0
 				||tokenName.indexOf("RULE") > 0
 				||tokenName.indexOf("USE_") > 0
+				||tokenName.indexOf("LEADING(") > 0
 //				||tokenName.indexOf("INDEX_") > 0
 //				||tokenName.indexOf("FULL(") > 0
 //				||tokenName.indexOf("HASH(") > 0
@@ -978,6 +1486,7 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 				||tokenName.indexOf("CACHE(") > 0
 //				||tokenName.indexOf("NOCACHE(") > 0
 				||tokenName.indexOf("MERGE(") > 0
+				||tokenName.indexOf("NO_MERGE") > 0
 //				||tokenName.indexOf("NOMERGE(") > 0
 //				||tokenName.indexOf("PUSH_SUBQ") > 0
 				) {
@@ -989,8 +1498,12 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 	}
 
 	private int countLines(String str){
-	   String[] lines = str.split("\r\n|\r|\n");
-	   return  lines.length;
+		String[] lines = str.split("\r\n|\r|\n");
+		return  lines.length;
+	}
+	private int countStr(String str){
+		// TODO : 한글처리는 아직 생각하지 말자
+		return  str.length();
 	}
 
 }

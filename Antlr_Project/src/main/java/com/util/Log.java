@@ -94,12 +94,12 @@ public class Log extends LogManager {
 
 	public static void logMapToString(Map<String, String> map) {
 
-		Log.debug("=======================================================");
+		getLogger("debug").debug("=======================================================");
 		int idx=0;
 		for(String key : map.keySet()) {
-			Log.debug("["+(++idx)+"] key : "+key+", Value : "+map.get(key));
+			getLogger("debug").debug("["+(++idx)+"] key : "+key+", Value : "+map.get(key));
 		}
-		Log.debug("=======================================================");
+		getLogger("debug").debug("=======================================================");
 	}
 
 	public static void printInfomation(Java8Lexer lexer, Java8Parser parser, List<JavaTokenInfoVo> tokenList) {
@@ -148,7 +148,7 @@ public class Log extends LogManager {
 
 			String lastStr = "";
 			if(tokenType == PlSqlParser.REGULAR_ID) lastStr = "*";
-			if(tokenList.get(i).isConvert()) lastStr += "<전환대상>";
+//			if(tokenList.get(i).isConvert()) lastStr += "<전환대상>";
 			Log.debug(StringUtil.padString(Integer.toString(i+1), 4, " ", true)
 					 +":"+StringUtil.rightBytesPad(tokenName, 24)
 					 +" ≒ "+symbolicName+"["+tokenType+"]"+lastStr);
