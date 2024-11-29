@@ -1,4 +1,4 @@
-package com.biz;
+package util.test;
 
 import com.vo.JavaTokenInfoVo;
 import com.vo.SqlTokenInfoVo;
