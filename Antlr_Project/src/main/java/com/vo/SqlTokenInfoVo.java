@@ -15,6 +15,7 @@ public class SqlTokenInfoVo {
 	private boolean isConvert = false;	// 전환여부
 	private String convertRule = "";	// 변환 규칙
 	private int tokenIndent;			// 들여쓰기
+	private int tokenDepLv;				// 토큰깊이
 
 	public int getTokenIndex() {
 		return tokenIndex;
@@ -82,6 +83,11 @@ public class SqlTokenInfoVo {
 	public void setTokenIndent(int tokenIndent) {
 		this.tokenIndent = tokenIndent;
 	}
-
+	public int getTokenDepLv() {
+		return tokenDepLv;
+	}
+	public void setTokenDepLv(int tokenDepLv) {
+		this.tokenDepLv = tokenDepLv;
+	}
 
 }

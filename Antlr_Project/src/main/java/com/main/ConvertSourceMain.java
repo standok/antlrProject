@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.svc.IConvertSvc;
 import com.svc.impl.ConvertSvc;
+import com.util.DataManager;
 import com.util.Log;
 import com.util.PropertyManager;
 
@@ -17,7 +18,7 @@ public class ConvertSourceMain {
 	public static void main(String[] args) {
 
 		// DataManager 초기화(임시)
-//		String tmp = DataManager.getNewColumnId("TB_IIS_ACIF_I_A", "ACNM");
+		String tmp = DataManager.getNewColumnId("TB_IIS_ACIF_I_A", "ACNM");
 		//Log.debug("===[ACNM]=====>["+tmp+"]");
 
 		// 소스 폴더 setting

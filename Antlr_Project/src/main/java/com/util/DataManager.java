@@ -2,7 +2,6 @@ package com.util;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 
 import com.svc.IPoiSvr;
 import com.svc.impl.PoiSvr;
@@ -10,8 +9,7 @@ import com.vo.DataMapDefinitionVo;
 
 public class DataManager {
 
-	private static List<DataMapDefinitionVo> dataMapDefinitionVoList = null;
-//	private static Map<String, DataMapDefinitionVo> dataMapDefinitionVoMap = null;
+	//private static List<DataMapDefinitionVo> dataMapDefinitionVoList = null;
 	private static HashMap dataMapDefinitionVoMap = null;
 	private static HashMap dataTableMap = null;
 
