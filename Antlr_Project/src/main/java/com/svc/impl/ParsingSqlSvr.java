@@ -383,13 +383,14 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 				continue;
 			} else if(tokenType == PlSqlParser.RIGHT_PAREN) {
 				if(startDepLv == depLv) {
-					tokenIdx--;
-					LogManager.getLogger("debug").debug(logStr+"< Select 종료 >");
 
-					// 서브쿼리테이블 alias 설정
+					// 인라인뷰 alias 설정
 					if(queryTokenList.get(tokenIdx+1).getTokenType() == PlSqlParser.REGULAR_ID) {
 						aliasName = queryTokenList.get(tokenIdx+1).getTokenName();
 					}
+
+					tokenIdx--;
+					LogManager.getLogger("debug").debug(logStr+"< Select 종료 >");
 
 					break;	// where 진입 초기 깊이랑 같아지면 종료
 				} else {
@@ -531,7 +532,16 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 				LogManager.getLogger("debug").debug(logStr);
 				continue;
 			} else if (tokenType == PlSqlParser.SELECT) {
-				parsingSelectSQL();
+				// 인라인뷰 존재
+				int startTokenIdx = tokenIdx;
+				String inLineViewName = parsingSelectSQL();
+
+				/**
+				 *  수정중 :인라인뷰 정보 가져오기 해야함
+				 */
+				// token에 인라인뷰 정보 입력하기
+//				setTokenInLineView(startTokenIdx, inLineViewName);
+
 			} else {
 				// 임시테이블 제외
 				if("DUAL".equals(tokenName)) {
