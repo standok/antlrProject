@@ -49,12 +49,12 @@ public class ConvertSourceMain {
 
 		// Java 파일 Parsing
 		for(File file : javaFileList) {
-//			convertJavaSource(file);
+			convertJavaSource(file);
 		}
 
 		// SQL 파일 Parsing
 		for(File file : sqlFileList) {
-			convertSQLSource(file);
+//			convertSQLSource(file);
 		}
 	}
 

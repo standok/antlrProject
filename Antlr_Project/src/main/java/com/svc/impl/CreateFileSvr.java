@@ -6,8 +6,12 @@ import java.io.IOException;
 
 import com.svc.ICreateFileSvr;
 import com.util.Log;
+import com.util.PropertyManager;
 
 public class CreateFileSvr implements ICreateFileSvr {
+
+	// 파일생성 여부
+	static boolean createFileYn = PropertyManager.getProperty("CREATE_FILE_YN")=="Y"?true:false;
 
 	@Override
 	public void createJavaFile(String filePath, StringBuilder str) throws IOException {
@@ -20,7 +24,7 @@ public class CreateFileSvr implements ICreateFileSvr {
 //		LogManager.getLogger("debug").debug("[fileName]=>["+fileName+"]");
 //		LogManager.getLogger("debug").debug("[resultFilePath]=>["+resultFilePath+"]");
 
-		createFile(resultFilePath, str);
+		if(createFileYn) createFile(resultFilePath, str);
 
 		Log.printMethod("[END]");
 	}
@@ -32,7 +36,7 @@ public class CreateFileSvr implements ICreateFileSvr {
 		String resultFilePath = filePath.replace(".sql", "").replace(".SQL", "")+"_NEW.sql";
 //		LogManager.getLogger("debug").debug("[resultFilePath]=>["+resultFilePath+"]");
 
-		createFile(resultFilePath, str);
+		if(createFileYn) createFile(resultFilePath, str);
 
 		Log.printMethod("[END]");
 	}
