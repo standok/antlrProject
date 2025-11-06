@@ -26,6 +26,7 @@ public class Log extends LogManager {
 		getLogger("debug").debug(msg);
 		System.out.println(msg);
 	}
+
 	public static void error(Exception e) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		PrintStream ps = new PrintStream(bos);

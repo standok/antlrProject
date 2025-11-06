@@ -22,21 +22,23 @@ public class ConvertSourceMain {
 		//Log.debug("===[ACNM]=====>["+tmp+"]");
 
 		// 소스 폴더 setting
-		String filePath = System.getProperty("user.dir") + PropertyManager.getProperty("FILE_PATH");
-		File dir = new File(filePath);
+		String fileDirPath = System.getProperty("user.dir") + PropertyManager.getProperty("OLD_FILE_PATH");
 
 		List<File> javaFileList = new ArrayList<File>();
 		List<File> sqlFileList = new ArrayList<File>();
 
-		String[] fileNames = dir.list();
+		String[] fileNames = getListFileName(fileDirPath);
+
 		for(String fileName : fileNames) {
 //			if(fileName.toUpperCase().endsWith(".JAVA")) {
 			if(fileName.toUpperCase().endsWith("DAO.JAVA")) {	// DAO만 조회
-				javaFileList.add(new File(filePath + fileName));
+//				Log.debug("==FileName=>"+fileName);
+//				javaFileList.add(new File(filePath + fileName));
+				javaFileList.add(new File(fileName));
 			}
-			if(fileName.toUpperCase().endsWith(".SQL")
-				&& !fileName.toUpperCase().endsWith("_NEW.SQL")) {
-				sqlFileList.add(new File(filePath + fileName));
+			if(fileName.toUpperCase().endsWith(".SQL")) {
+//				&& !fileName.toUpperCase().endsWith("_NEW.SQL")) {
+				sqlFileList.add(new File(fileName));
 			}
 		}
 
@@ -56,6 +58,36 @@ public class ConvertSourceMain {
 		for(File file : sqlFileList) {
 //			convertSQLSource(file);
 		}
+	}
+
+	public static String[] getListFileName(String fileDirPath) {
+
+		File path = new File(fileDirPath);
+		File[] fileList = path.listFiles();
+
+		ArrayList<String> list = new ArrayList<>();
+
+        for( int i = 0; i < fileList.length; i++ ) {
+
+            if( fileList[i].isFile() ) {
+                //System.out.println( fileList[i].getPath() );  // 파일의 FullPath 출력
+            	list.add(fileList[i].getPath());
+            }
+            else if( fileList[i].isDirectory() ) {
+            	String fileNames[] = getListFileName( fileList[i].getPath() );  // 재귀함수 호출
+            	for(String fileName : fileNames) {
+            		list.add(fileName);
+                }
+            }
+        }
+
+        String[] retArr = new String[list.size()];
+        int size = 0;
+        for(String temp : list) {
+        	retArr[size++] = temp;
+        }
+
+        return retArr;
 	}
 
 	/**
