@@ -4,18 +4,19 @@ import java.util.List;
 
 import com.vo.JavaTokenInfoVo;
 
-public interface IParsingJavaSvr {
+public interface IParsingJavaSvc {
 
 	public List<JavaTokenInfoVo> getJavaTokenList();
 
 	/**
 	 * 설명 : String을 Parsing해서 JavaTokenList 정보 저장
+	 *       - trnDcd(거래구분코드) : 1. 조회 / 2. SQL변환
 	 *
 	 * @param StringBuilder
 	 * @return
 	 * @throws Exception
 	 */
-	public void parsingJava(StringBuilder sb) throws Exception;
+	public void parsingJava(StringBuilder sb, String trnDcd) throws Exception;
 
 	/**
 	 * 설명 : JavaTokenList의 SQL 소스를 변경한다.

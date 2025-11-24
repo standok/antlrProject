@@ -9,9 +9,9 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 import com.svc.IConvertSvc;
-import com.svc.ICreateFileSvr;
-import com.svc.IParsingJavaSvr;
-import com.svc.IParsingSqlSvr;
+import com.svc.ICreateFileSvc;
+import com.svc.IParsingJavaSvc;
+import com.svc.IParsingSqlSvc;
 import com.util.Log;
 import com.util.LogManager;
 import com.util.StringUtil;
@@ -32,19 +32,31 @@ public class ConvertSvc implements IConvertSvc {
 
 		String fileName = file.getName();
 
-		InputStream in = new FileInputStream(file);
-		InputStreamReader rd = new InputStreamReader(in, "UTF-8");
-		BufferedReader br = new BufferedReader(rd);
+		InputStream in = null;
+		InputStreamReader rd = null;
+		BufferedReader br = null;
 
 		StringBuilder sb = new StringBuilder();
 		String line;
 
-		if(fileName.toUpperCase().endsWith(".JAVA")) {
-			while((line=br.readLine()) != null) sb.append(line + "\n");
-			convertJava(file.getPath(), sb);
-		} else if(fileName.toUpperCase().endsWith(".SQL")) {
-			while((line=br.readLine()) != null) sb.append(line.toUpperCase() + "\n");
-			convertSql(file.getPath(), sb);
+		try {
+			in = new FileInputStream(file);
+			rd = new InputStreamReader(in, "UTF-8");
+			br = new BufferedReader(rd);
+
+			if(fileName.toUpperCase().endsWith(".JAVA")) {
+				while((line=br.readLine()) != null) sb.append(line + "\n");
+				convertJava(file.getPath(), sb);
+			} else if(fileName.toUpperCase().endsWith(".SQL")) {
+				while((line=br.readLine()) != null) sb.append(line.toUpperCase() + "\n");
+				convertSql(file.getPath(), sb);
+			}
+		} catch (Exception e) {
+
+		} finally {
+			if(br != null) try{br.close();} catch(IOException ioe){}
+			if(rd != null) try{rd.close();} catch(IOException ioe){}
+			if(in != null) try{in.close();} catch(IOException ioe){}
 		}
 	}
 
@@ -62,8 +74,8 @@ public class ConvertSvc implements IConvertSvc {
 		/**********************************
 		 * TokenStream에서 필요한정보를 List로 변환한다
 		 **********************************/
-		IParsingJavaSvr parsingJavaSvc = new ParsingJavaSvr();
-		parsingJavaSvc.parsingJava(sb);
+		IParsingJavaSvc parsingJavaSvc = new ParsingJavaSvc();
+		parsingJavaSvc.parsingJava(sb, "2");	// 거래구분코드(2:SQL변환)
 
 		// 파싱한 정보를 가져온다.
 		List<JavaTokenInfoVo> javaTokenList = parsingJavaSvc.getJavaTokenList();
@@ -145,8 +157,8 @@ public class ConvertSvc implements IConvertSvc {
 		/**********************************
 		 * 새로운 Java 파일 생성
 		 **********************************/
-		ICreateFileSvr createFileSvr = new CreateFileSvr();
-		createFileSvr.createJavaFile(filePath, parsingJavaSvc.getJavaToString(false));
+		ICreateFileSvc createFileSvc = new CreateFileSvc();
+		createFileSvc.createJavaFile(filePath, parsingJavaSvc.getJavaToString(false));
 
 		Log.printMethod("[END]");
 	}
@@ -166,7 +178,7 @@ public class ConvertSvc implements IConvertSvc {
 		/**********************************
 		 * TokenStream에서 필요한정보를 List로 변환한다
 		 **********************************/
-		IParsingSqlSvr parsingSqlSvc = new ParsingSqlSvr();
+		IParsingSqlSvc parsingSqlSvc = new ParsingSqlSvc();
 		parsingSqlSvc.parsingSql(sb);
 
 		// 파싱한 정보를 가져온다.
@@ -192,8 +204,8 @@ public class ConvertSvc implements IConvertSvc {
 			/**********************************
 			 * 새로운 Java 파일 생성
 			 **********************************/
-			ICreateFileSvr createFileSvr = new CreateFileSvr();
-			createFileSvr.createSqlFile(filePath, rtnStr);
+			ICreateFileSvc createFileSvc = new CreateFileSvc();
+			createFileSvc.createSqlFile(filePath, rtnStr);
 		}
 
 		Log.printMethod("[END]");

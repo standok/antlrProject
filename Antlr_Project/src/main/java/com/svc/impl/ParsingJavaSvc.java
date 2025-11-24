@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Vocabulary;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import com.svc.IParsingJavaSvr;
+import com.svc.IParsingJavaSvc;
 import com.util.Log;
 import com.util.LogManager;
 import com.util.StringUtil;
@@ -18,7 +18,7 @@ import com.vo.JavaTokenInfoVo;
 import util.antlr.Java8Lexer;
 import util.antlr.Java8Parser;
 
-public class ParsingJavaSvr implements IParsingJavaSvr {
+public class ParsingJavaSvc implements IParsingJavaSvc {
 
 	private List<JavaTokenInfoVo> javaTokenList = null;
 
@@ -35,7 +35,7 @@ public class ParsingJavaSvr implements IParsingJavaSvr {
 	 * @throws
 	 */
 	@Override
-	public void parsingJava(StringBuilder sb) throws Exception {
+	public void parsingJava(StringBuilder sb, String trnDcd) throws Exception {
 
 		Log.printMethod("[START]");
 
@@ -81,64 +81,66 @@ public class ParsingJavaSvr implements IParsingJavaSvr {
 		}
 
 		// Java 소스에서 전환대상을 추출
-		boolean state = false;
-		String bufferName = "";
+		if("2".equals(trnDcd)) {
+			boolean state = false;
+			String bufferName = "";
 
-		//SQL 정보 저장
-		for(int i = 0; i < javaTokenList.size(); i++) {
+			//SQL 정보 저장
+			for(int i = 0; i < javaTokenList.size(); i++) {
 
-//			int tokenIndex = tokenList.get(i).getTokenIndex();
-			String tokenName = javaTokenList.get(i).getTokenName();
-			int tokenType = javaTokenList.get(i).getTokenType();
-//			int tokenLine = tokenList.get(i).getTokenLine();
+//				int tokenIndex = tokenList.get(i).getTokenIndex();
+				String tokenName = javaTokenList.get(i).getTokenName();
+				int tokenType = javaTokenList.get(i).getTokenType();
+//				int tokenLine = tokenList.get(i).getTokenLine();
 
-			if (tokenType == Java8Parser.Identifier) {
+				if (tokenType == Java8Parser.Identifier) {
 
-				// SQL StringBuffer 소스의 동적변수 찾기
-				if(state) {
-					if((i-2 > 0)
-						&& "append".equals(javaTokenList.get(i-2).getTokenName())
-						&&(i+3 < javaTokenList.size())
-						&& "append".equals(javaTokenList.get(i+3).getTokenName())) {
+					// SQL StringBuffer 소스의 동적변수 찾기
+					if(state) {
+						if((i-2 > 0)
+								&& "append".equals(javaTokenList.get(i-2).getTokenName())
+								&&(i+3 < javaTokenList.size())
+								&& "append".equals(javaTokenList.get(i+3).getTokenName())) {
+							javaTokenList.get(i).setConvert(true);
+							javaTokenList.get(i).setConvertRule("동적변수");
+							javaTokenList.get(i).setConvertBufferName(bufferName);
+						}
+					}
+
+					// TODO: QueryManager 를 사용하지 않는 부분도 확인이 필요하다.
+					if("QueryManager".equals(tokenName)
+							&&"new".equals(javaTokenList.get(i-1).getTokenName())) {
+						javaTokenList.get(i).setSqlLastLine(true);
+						state = false;
+						bufferName = "";
+					}
+
+					// SQL StringBuffer 변수명 찾기
+					if("StringBuffer".equals(tokenName)
+							&& Java8Parser.Identifier == javaTokenList.get(i+1).getTokenType()
+							&& Java8Parser.ASSIGN == javaTokenList.get(i+2).getTokenType()
+							) {
+						bufferName = javaTokenList.get(i+1).getTokenName();
+					}
+
+				} else if(tokenType == Java8Parser.StringLiteral) {
+
+					tokenName = tokenName.replace("\"","");
+
+					// TODO: 테스트하면서 추가
+					if(tokenName.contains("SELECT")) state = true;
+					if(tokenName.contains("UPDATE")) state = true;
+					if(tokenName.contains("DELETE")) state = true;
+					if(tokenName.contains("INSERT")) state = true;
+					if(tokenName.contains("WITH AS")) state = true;
+
+					//LogManager.getLogger("debug").debug("["+state+"]tokenName==>"+tokenName);
+
+					if(state) {
 						javaTokenList.get(i).setConvert(true);
-						javaTokenList.get(i).setConvertRule("동적변수");
+						javaTokenList.get(i).setConvertRule("SQL변환");
 						javaTokenList.get(i).setConvertBufferName(bufferName);
 					}
-				}
-
-				// TODO: QueryManager 를 사용하지 않는 부분도 확인이 필요하다.
-				if("QueryManager".equals(tokenName)
-						&&"new".equals(javaTokenList.get(i-1).getTokenName())) {
-					javaTokenList.get(i).setSqlLastLine(true);
-					state = false;
-					bufferName = "";
-				}
-
-				// SQL StringBuffer 변수명 찾기
-				if("StringBuffer".equals(tokenName)
-					&& Java8Parser.Identifier == javaTokenList.get(i+1).getTokenType()
-					&& Java8Parser.ASSIGN == javaTokenList.get(i+2).getTokenType()
-					) {
-					bufferName = javaTokenList.get(i+1).getTokenName();
-				}
-
-			} else if(tokenType == Java8Parser.StringLiteral) {
-
-				tokenName = tokenName.replace("\"","");
-
-				// TODO: 테스트하면서 추가
-				if(tokenName.contains("SELECT")) state = true;
-				if(tokenName.contains("UPDATE")) state = true;
-				if(tokenName.contains("DELETE")) state = true;
-				if(tokenName.contains("INSERT")) state = true;
-				if(tokenName.contains("WITH AS")) state = true;
-
-				//LogManager.getLogger("debug").debug("["+state+"]tokenName==>"+tokenName);
-
-				if(state) {
-					javaTokenList.get(i).setConvert(true);
-					javaTokenList.get(i).setConvertRule("SQL변환");
-					javaTokenList.get(i).setConvertBufferName(bufferName);
 				}
 			}
 		}

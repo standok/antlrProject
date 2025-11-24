@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.svc.IConvertSvc;
+import com.svc.IInquiryFileSvc;
 import com.svc.impl.ConvertSvc;
+import com.svc.impl.InquiryFileSvc;
 import com.util.DataManager;
 import com.util.Log;
 import com.util.PropertyManager;
@@ -14,6 +16,7 @@ import com.util.PropertyManager;
 public class ConvertSourceMain {
 
 	static IConvertSvc convertSvc = new ConvertSvc();
+	static IInquiryFileSvc inquiryFileSvc = new InquiryFileSvc();
 
 	public static void main(String[] args) {
 
@@ -25,16 +28,21 @@ public class ConvertSourceMain {
 		String fileDirPath = System.getProperty("user.dir") + PropertyManager.getProperty("OLD_FILE_PATH");
 
 		List<File> javaFileList = new ArrayList<File>();
+		List<File> javaDaoFileList = new ArrayList<File>();
 		List<File> sqlFileList = new ArrayList<File>();
 
 		String[] fileNames = getListFileName(fileDirPath);
 
 		for(String fileName : fileNames) {
-//			if(fileName.toUpperCase().endsWith(".JAVA")) {
-			if(fileName.toUpperCase().endsWith("DAO.JAVA")) {	// DAO만 조회
+			if(fileName.toUpperCase().endsWith(".JAVA")) {
 //				Log.debug("==FileName=>"+fileName);
 //				javaFileList.add(new File(filePath + fileName));
 				javaFileList.add(new File(fileName));
+			}
+			if(fileName.toUpperCase().endsWith("DAO.JAVA")) {	// DAO만 조회
+//				Log.debug("==FileName=>"+fileName);
+//				javaDaoFileList.add(new File(filePath + fileName));
+				javaDaoFileList.add(new File(fileName));
 			}
 			if(fileName.toUpperCase().endsWith(".SQL")) {
 //				&& !fileName.toUpperCase().endsWith("_NEW.SQL")) {
@@ -43,15 +51,34 @@ public class ConvertSourceMain {
 		}
 
 		Log.debug("============================================================");
-		Log.debug("==                   ConvertSourceMain                    ==");
+		Log.debug("==                       SourceMain                       ==");
 		Log.debug("============================================================");
-		Log.debug("convert Java File 전체건수 = ["+javaFileList.size()+"]");
-		Log.debug("convert Sql File 전체건수 = ["+sqlFileList.size()+"]");
+		Log.debug(" Java File 전체건수 = ["+javaFileList.size()+"]");
+		Log.debug(" Java DAO File 전체건수 = ["+javaDaoFileList.size()+"]");
+		Log.debug(" Sql File 전체건수 = ["+sqlFileList.size()+"]");
 		Log.debug("============================================================");
 
-		// Java 파일 Parsing
+		// Java 파일 확인
 		for(File file : javaFileList) {
-			convertJavaSource(file);
+
+			String fileName = file.getName();
+//			Log.debug("==FileName=>"+fileName);
+
+			String filePath = file.getPath();
+//			Log.debug("==filePath=>"+filePath);
+
+			// ISvc ServiceID 확인
+			if(filePath.toUpperCase().endsWith("\\SVC\\"+fileName.toUpperCase())
+					&& fileName.toUpperCase().startsWith("I")
+					&& fileName.toUpperCase().endsWith("SVC.JAVA")) {
+				Log.debug("==ISVC확인=>"+fileName);
+				inquiryJavaSource(file);
+			}
+		}
+
+		// Java DAO 파일 Parsing
+		for(File file : javaDaoFileList) {
+//			convertJavaSource(file);
 		}
 
 		// SQL 파일 Parsing
@@ -88,6 +115,35 @@ public class ConvertSourceMain {
         }
 
         return retArr;
+	}
+
+	/**
+	 * 설명 : Java ISvc 정보 확인
+	 *
+	 * @param File
+	 * @return
+	 * @throws
+	 */
+	public static void inquiryJavaSource(File file) {
+
+		Log.debug("[Antlr] Java File Name : ["+file.getPath()+"]\n");
+
+		double startTime = System.currentTimeMillis();
+
+		try {
+			inquiryFileSvc.inquiryJava(file);
+		} catch (IOException e) {
+			Log.error(e);
+		} catch (Exception e) {
+			Log.error(e);
+		}
+
+		double endTime = System.currentTimeMillis();
+		double diff = (endTime - startTime) / 1000;
+
+		Log.debug("=============================================");
+		Log.debug("convertJavaSource finished time ["+diff+"/Sec]");
+		Log.debug("=============================================");
 	}
 
 	/**

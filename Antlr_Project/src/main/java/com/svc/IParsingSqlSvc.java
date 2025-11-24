@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.vo.SqlTokenInfoVo;
 
-public interface IParsingSqlSvr {
+public interface IParsingSqlSvc {
 
 	public List<List<SqlTokenInfoVo>> getSqlConList();
 	public List<SqlTokenInfoVo> getQueryTokenList();

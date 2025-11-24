@@ -4,12 +4,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import com.svc.ICreateFileSvr;
+import com.svc.ICreateFileSvc;
 import com.util.Log;
 import com.util.LogManager;
 import com.util.PropertyManager;
 
-public class CreateFileSvr implements ICreateFileSvr {
+public class CreateFileSvc implements ICreateFileSvc {
 
 	// 파일생성 여부
 	static boolean createFileYn = PropertyManager.getProperty("CREATE_FILE_YN").equals("Y")?true:false;

@@ -2,7 +2,7 @@ package com.svc;
 
 import java.io.IOException;
 
-public interface ICreateFileSvr {
+public interface ICreateFileSvc {
 
 	public void createJavaFile(String filePath, StringBuilder str) throws IOException;
 

@@ -13,7 +13,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.Vocabulary;
 
-import com.svc.IParsingSqlSvr;
+import com.svc.IParsingSqlSvc;
 import com.util.DataManager;
 import com.util.Log;
 import com.util.LogManager;
@@ -24,7 +24,7 @@ import com.vo.SqlTokenInfoVo;
 import util.antlr.PlSqlLexer;
 import util.antlr.PlSqlParser;
 
-public class ParsingSqlSvr implements IParsingSqlSvr {
+public class ParsingSqlSvc implements IParsingSqlSvc {
 
 	private List<List<SqlTokenInfoVo>> sqlConList = null;
 	private List<SqlTokenInfoVo> queryTokenList = null;
@@ -50,7 +50,7 @@ public class ParsingSqlSvr implements IParsingSqlSvr {
 	 * 생성자에서 하는일
 	 * - 토큰 타입 정의 ( 펀드에 필요한것만 넣을것 )
 	 */
-	public ParsingSqlSvr() {
+	public ParsingSqlSvc() {
 
 		/*******************************
 		 * 데이터 타입
