@@ -9,6 +9,8 @@ import org.antlr.v4.runtime.Vocabulary;
 
 import com.vo.JavaTokenInfoVo;
 import com.vo.SqlTokenInfoVo;
+import com.vo.SvcFileFuncInfoVo;
+import com.vo.SvcFileInfoVo;
 
 import util.antlr.Java8Lexer;
 import util.antlr.Java8Parser;
@@ -153,6 +155,42 @@ public class Log extends LogManager {
 			Log.debug(StringUtil.padString(Integer.toString(i+1), 4, " ", true)
 					 +":"+StringUtil.rightBytesPad(tokenName, 24)
 					 +" ≒ "+symbolicName+"["+tokenType+"]"+lastStr);
+		}
+
+		Log.debug("=======================================================");
+	}
+
+	public static void printInfomation(List<SvcFileInfoVo> svcFileInfoList) {
+		Log.debug("--------------------------------------------------------------");
+		Log.debug("[Antlr] Svc File Count : ["+svcFileInfoList.size()+"]");
+		Log.debug("");
+//		Log.debug("   #: Token/Syntax             ≒ Symbolic Id[TokenType]");
+		Log.debug("--------------------------------------------------------------");
+
+		int idx = 1;
+
+		for(int i = 0; i < svcFileInfoList.size(); i++) {
+			String PkgNm = svcFileInfoList.get(i).getPkgNm();
+			String sorcNm = svcFileInfoList.get(i).getSorcNm();
+			List<SvcFileFuncInfoVo> svcFileFuncInfoVoList = svcFileInfoList.get(i).getFuncInfoVoList();
+
+//			Log.debug(StringUtil.padString(Integer.toString(i+1), 4, " ", true)
+//					 +":"+StringUtil.rightBytesPad(PkgNm, 30)
+//					 +":"+StringUtil.rightBytesPad(sorcNm, 50));
+			for(int k = 0; k < svcFileFuncInfoVoList.size(); k++) {
+				String funcKrnNm = svcFileFuncInfoVoList.get(k).getFuncKrnNm();
+				String funcNm = svcFileFuncInfoVoList.get(k).getFuncNm();
+				String svcId = svcFileFuncInfoVoList.get(k).getSvcId();
+
+//				Log.debug(StringUtil.padString(Integer.toString(k+1), 4, " ", true)
+//						+") "+StringUtil.rightBytesPad(svcId, 12)
+//						+" "+StringUtil.rightBytesPad(funcNm+"("+funcKrnNm+")", 100));
+				Log.debug(StringUtil.padString(Integer.toString(idx++), 4, " ", true)
+						+"|"+sorcNm //StringUtil.rightBytesPad(sorcNm, 50)
+						+"|"+funcNm //StringUtil.rightBytesPad(funcNm, 100)
+						+"|"+funcKrnNm //StringUtil.rightBytesPad(funcKrnNm, 100)
+						+"|"+StringUtil.rightBytesPad(svcId, 12, '0'));
+			}
 		}
 
 		Log.debug("=======================================================");

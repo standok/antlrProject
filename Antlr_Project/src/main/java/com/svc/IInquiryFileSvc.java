@@ -3,6 +3,8 @@ package com.svc;
 import java.io.File;
 import java.io.IOException;
 
+import com.vo.SvcFileInfoVo;
+
 public interface IInquiryFileSvc {
 
 	/**
@@ -11,6 +13,6 @@ public interface IInquiryFileSvc {
 	 * @param File
 	 * @throws Exception, IOException
 	 */
-	public void inquiryJava(File file) throws IOException;
+	public SvcFileInfoVo inquiryJava(File file) throws IOException;
 
 }

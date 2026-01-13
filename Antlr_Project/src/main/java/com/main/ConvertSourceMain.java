@@ -12,6 +12,7 @@ import com.svc.impl.InquiryFileSvc;
 import com.util.DataManager;
 import com.util.Log;
 import com.util.PropertyManager;
+import com.vo.SvcFileInfoVo;
 
 public class ConvertSourceMain {
 
@@ -58,6 +59,8 @@ public class ConvertSourceMain {
 		Log.debug(" Sql File 전체건수 = ["+sqlFileList.size()+"]");
 		Log.debug("============================================================");
 
+		List<SvcFileInfoVo> svcFileInfoList = new ArrayList();
+
 		// Java 파일 확인
 		for(File file : javaFileList) {
 
@@ -72,16 +75,23 @@ public class ConvertSourceMain {
 					&& fileName.toUpperCase().startsWith("I")
 					&& fileName.toUpperCase().endsWith("SVC.JAVA")) {
 				Log.debug("==ISVC확인=>"+fileName);
-				inquiryJavaSource(file);
+				SvcFileInfoVo svcFileInfoVo = inquiryJavaSource(file);
+				svcFileInfoList.add(svcFileInfoVo);
 			}
 		}
 
-		// Java DAO 파일 Parsing
+		Log.printInfomation(svcFileInfoList);
+
+		/**********************************
+		 * Java DAO File Convert
+		 **********************************/
 		for(File file : javaDaoFileList) {
 //			convertJavaSource(file);
 		}
 
-		// SQL 파일 Parsing
+		/**********************************
+		 * SQL File Convert
+		 **********************************/
 		for(File file : sqlFileList) {
 //			convertSQLSource(file);
 		}
@@ -124,14 +134,16 @@ public class ConvertSourceMain {
 	 * @return
 	 * @throws
 	 */
-	public static void inquiryJavaSource(File file) {
+	public static SvcFileInfoVo inquiryJavaSource(File file) {
 
 		Log.debug("[Antlr] Java File Name : ["+file.getPath()+"]\n");
 
 		double startTime = System.currentTimeMillis();
 
+		SvcFileInfoVo rtnVo = new SvcFileInfoVo();
+
 		try {
-			inquiryFileSvc.inquiryJava(file);
+			rtnVo = inquiryFileSvc.inquiryJava(file);
 		} catch (IOException e) {
 			Log.error(e);
 		} catch (Exception e) {
@@ -144,6 +156,8 @@ public class ConvertSourceMain {
 		Log.debug("=============================================");
 		Log.debug("convertJavaSource finished time ["+diff+"/Sec]");
 		Log.debug("=============================================");
+
+		return rtnVo;
 	}
 
 	/**
